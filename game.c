@@ -1,6 +1,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+#include <intelfpgaup/video.h>
 
 int preenche_zero(int t[10][20]){
     int cont0;
@@ -43,19 +44,20 @@ int main ( void ) {
   int tela[10][20];
   int pos[2];
 
-  pos[0] = 0;  // Define as posicao 0 do bloco
-  pos[1] = 10; // Define as posicao 1 do bloco
+  pos[0] = 0;  // Define a posicao 0 do bloco
+  pos[1] = 10; // Define a posicao 1 do bloco
 
   preenche_zero(tela);
   tela[0][10] = 1;
 
-  for(cont = 0; cont < 10; cont++)
+  /*for(cont = 0; cont < 10; cont++)
     {
     system("clear");
     imprime_tela(tela);
     pos[0] = mover(pos, tela);
     sleep(1);
     }
-    
+  */
+  video_box (int /*x1*/, int /*y1*/, int /*x2*/, int /*y2*/, short /*color*/);  printf("Colunas:%d\nLinhas:%d", cols, rows);
 return 0;
 }
