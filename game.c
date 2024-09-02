@@ -44,11 +44,44 @@ int main ( void ) {
   int tela[10][20];
   int pos[2];
 
-  pos[0] = 0;  // Define a posicao 0 do bloco
-  pos[1] = 10; // Define a posicao 1 do bloco
+  posx[0] = 20;  // Define a posicao x1 do bloco
+  posx[1] = 60; // Define a posicao x2 do bloco
+
+  posy[0] = 20;  // Define a posicao y1 do bloco
+  posy[1] = 60; // Define a posicao y2 do bloco
 
   preenche_zero(tela);
   tela[0][10] = 1;
+
+    int colunas, linhas, tColunas, tLinhas;
+
+    if (video_read(&colunas, &linhas, &tColunas, &tLinhas) != 1) {
+        video_close();
+        return 1;
+    }
+    video_clear();
+
+    // Desenha o quadrado na tela
+    for(cont = 0; cont < 10; cont++)
+    {
+      video_open();
+
+      video_clear();
+
+      video_box(posx[0], posx[1], posy[0], posy[1], video_WHITE);
+
+      video_show();
+
+      sleep(1);
+
+      video_close();
+
+      // Move o quadrado para baixo
+      posx[0] = posx[0] + 10;
+      posx[1] = posx[1] + 10;
+      posy[0] = posy[0] + 10;
+      posy[1] = posy[1] + 10;
+    }
 
   /*for(cont = 0; cont < 10; cont++)
     {

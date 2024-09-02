@@ -14,7 +14,7 @@ int main(void) {
     }
     video_clear();
 
-    video_box(20, 20, 80, 60, video_BLUE);
+    video_box(20, 20, 80, 60, video_WHITE);
 
     video_show();
 
