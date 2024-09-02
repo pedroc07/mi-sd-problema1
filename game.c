@@ -43,9 +43,6 @@ int main ( void ) {
   int cont;
   int tela[10][20];
   int pos[2];
-  int alt = 120;
-  int lar = 240;
-  short color = video_WHITE;
 
   pos[0] = 0;  // Define a posicao 0 do bloco
   pos[1] = 10; // Define a posicao 1 do bloco
@@ -61,8 +58,5 @@ int main ( void ) {
     sleep(1);
     }
   */
-  video_open();
-  video_box (alt, lar, alt, lar, color);
-  video_show();
 return 0;
 }
