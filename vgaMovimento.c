@@ -21,7 +21,7 @@ int main(void) {
     while (1) {
         video_clear();
 
-        // Verifica se o quadrado está da tela
+        // Verifica se o quadrado está saindo da tela
         if (x < 0 || x >= colunas - 60 || y < 0 || y >= linhas - 40) {
             // Inverte a direção do quadrado
             velocidadeX = -velocidadeX;
