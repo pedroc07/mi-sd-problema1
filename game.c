@@ -55,12 +55,6 @@ int main ( void ) {
 
     int colunas, linhas, tColunas, tLinhas;
 
-    if (video_read(&colunas, &linhas, &tColunas, &tLinhas) != 1) {
-        video_close();
-        return 1;
-    }
-    video_clear();
-
     // Desenha o quadrado na tela
     for(cont = 0; cont < 10; cont++)
     {
