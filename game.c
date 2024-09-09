@@ -102,9 +102,6 @@ int desenha_matriz(int t[10][24]){
       else if(t[cont0][cont1] == 9) {
         video_box(posx1, posy1, posx2, posy2, video_GREY);
       }
-      else if(t[cont0][cont1] == 10) {
-        video_box(posx1, posy1, posx2, posy2, video_BLACK);
-      }
     }
   }
 
