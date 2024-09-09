@@ -163,6 +163,21 @@ int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int 
   return result;
 }
 
+//Funcao que move para baixo as pecas acima da linha eliminada
+int cascade(int estatico[10][24], int inicio) {
+  int cont0;
+  int cont1;
+  int result = 0;
+
+  for(cont1 = inicio; cont1 >= 0; cont1--) {
+    
+    for(cont0 = 0; cont0 < 10; cont1++) {
+      estatico[cont0][cont1+1] = estatico[cont0][cont1];
+      estatico[cont0][cont1] = 0;
+    }
+  }
+}
+
 
 int main ( void ) {
   int cont;
