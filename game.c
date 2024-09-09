@@ -134,6 +134,7 @@ int desenha_matriz(int t[10][24]){
 int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int dy) {
   int cont0;
   int cont1;
+
   int result = 0;
 
   for(cont0 = 0; cont0 < 4; cont0++) {
@@ -163,11 +164,46 @@ int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int 
   return result;
 }
 
-//Funcao que move para baixo as pecas acima da linha eliminada
-int cascade(int estatico[10][24], int inicio) {
+
+//Funcao que detecta uma linha preenchida totalmente e apaga o conteudo
+int implodir(int estatico[10][24]) {
   int cont0;
   int cont1;
-  int result = 0;
+  
+  int result0 = 1;
+  int result1;
+
+  //Percorre linha por linha, de cima a baixo
+  for(cont1 = 23; cont0 >= 0; cont1--) {
+    result1 = 0;
+
+    //E coluna por coluna, da esquerda para a direita
+    for(cont0 = 0; cont0 < 10; cont1++) {
+      
+      //Caso seja encontrado um espaco vazio na linha, sabemos que nao pode ser eliminada
+      if(estatico[cont0][cont1] == 0) {
+        result1 = 1;
+      }
+    }
+
+    //Se nao existiram espacos vazios
+    if(result1 == 0){
+      result0 = 0;
+
+      //A linha sera eliminada
+      for(cont0 = 0; cont0 < 10; cont1++) {
+        estatico[cont0][cont1] = 0;
+      }
+    }
+  }
+
+  return result0;
+}
+
+//Funcao que move para baixo as pecas acima da linha eliminada
+int cascada(int estatico[10][24], int inicio) {
+  int cont0;
+  int cont1;
 
   for(cont1 = inicio; cont1 >= 0; cont1--) {
     
@@ -176,6 +212,8 @@ int cascade(int estatico[10][24], int inicio) {
       estatico[cont0][cont1] = 0;
     }
   }
+
+  return 0;
 }
 
 
