@@ -5,14 +5,14 @@
 
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
-int preenche_zero_10_x_24(int tela[10][24]) {
+int preenche_zero_10_x_24(int (*tela)[10][24]) {
   int cont0;
   int cont1;
   
   for(cont0 = 0; cont0 < 10; cont0++) {
     
     for(cont1 = 0; cont1 < 24; cont1++) {
-      tela[cont0][cont1] = 0;
+      (*tela)[cont0][cont1] = 0;
     }
   }
 
@@ -20,14 +20,14 @@ int preenche_zero_10_x_24(int tela[10][24]) {
 }
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 4x4
-int preenche_zero_4_x_4(int tela[4][4]) {
+int preenche_zero_4_x_4(int (*tela)[4][4]) {
     int cont0;
     int cont1;
   
   for(cont0 = 0; cont0 < 4; cont0++) {
     
     for(cont1 = 0; cont1 < 4; cont1++){
-      tela[cont0][cont1] = 0;
+      (*tela)[cont0][cont1] = 0;
     }
   }
 
@@ -36,17 +36,17 @@ int preenche_zero_4_x_4(int tela[4][4]) {
 
 
 //Funcao que une (modifica matriz tela) uma matriz com posicao absoluta de tamanho 10x24 (estatico) com uma matriz com posicao relativa de tamanho 4x4 (peca em relacao a posx e posy)
-int une_matriz(int tela[10][24], int estatico[10][24], int peca[4][4], int posx, int posy) {
+int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int posx, int posy) {
   int cont0;
   int cont1;
 
   for(cont0 = 0; cont0 < 10; cont0++) {
     
     for(cont1 = 0; cont1 < 24; cont1++){
-      tela[cont0][cont1] = estatico[cont0][cont1];
+      (*tela)[cont0][cont1] = estatico[cont0][cont1];
       
-      if (((cont0 - posx) >= 0) && ((cont1 - posy) >= 0) && ((cont0 - posy) < 4) && ((cont1- posy) < 4) && peca[(cont0 - posx)][(cont1 - posy)] != 0) {
-        tela[cont0][cont1] = peca[(cont0 - posx)][(cont1 - posy)];
+      if (((cont0 - posx) >= 0) && ((cont1 - posy) >= 0) && ((cont0 - posx) < 4) && ((cont1 - posy) < 4) && peca[(cont0 - posx)][(cont1 - posy)] != 0) {
+        (*tela)[cont0][cont1] = peca[(cont0 - posx)][(cont1 - posy)];
       }
     }
   }
@@ -88,37 +88,19 @@ int desenha_matriz(int t[10][24]){
         video_box(posx1, posy1, posx2, posy2, video_YELLOW);
       }
       else if(t[cont0][cont1] == 5) {
-        video_box(posx1, posy1, posx2, posy2, video_LIME);
-      }
-      else if(t[cont0][cont1] == 6) {
         video_box(posx1, posy1, posx2, posy2, video_GREEN);
       }
-      else if(t[cont0][cont1] == 7) {
-        video_box(posx1, posy1, posx2, posy2, video_LIGHT_BLUE);
-      }
-      else if(t[cont0][cont1] == 8) {
+      else if(t[cont0][cont1] == 6) {
         video_box(posx1, posy1, posx2, posy2, video_CYAN);
       }
-      else if(t[cont0][cont1] == 9) {
+      else if(t[cont0][cont1] == 7) {
         video_box(posx1, posy1, posx2, posy2, video_BLUE);
       }
-      else if(t[cont0][cont1] == 10) {
+      else if(t[cont0][cont1] == 8) {
         video_box(posx1, posy1, posx2, posy2, video_MAGENTA);
       }
-      else if(t[cont0][cont1] == 11) {
-        video_box(posx1, posy1, posx2, posy2, video_PURPLE);
-      }
-      else if(t[cont0][cont1] == 12) {
-        video_box(posx1, posy1, posx2, posy2, video_BROWN);
-      }
-      else if(t[cont0][cont1] == 13) {
-        video_box(posx1, posy1, posx2, posy2, video_GRAY);
-      }
-      else if(t[cont0][cont1] == 14) {
-        video_box(posx1, posy1, posx2, posy2, video_LIGHT_GRAY);
-      }
-      else if(t[cont0][cont1] == 15) {
-        video_box(posx1, posy1, posx2, posy2, video_BLACK);
+      else if(t[cont0][cont1] == 9) {
+        video_box(posx1, posy1, posx2, posy2, video_GREY);
       }
     }
   }
@@ -129,9 +111,63 @@ int desenha_matriz(int t[10][24]){
   return 0;
 }
 
+//Funcao que desenha uma matriz 10x24
+//Versao de teste (print)
+/*int desenha_matriz(int t[10][24]){
+  int cont0;
+  int cont1;
+
+  printf("\n\n");
+
+  for(cont1 = 0; cont1 < 24; cont1++) {
+    printf("\n");
+
+    for(cont0 = 0; cont0 < 10; cont0++){
+      
+      if (t[cont0][cont1] == 0) {
+        printf("\033[0;37m");
+      }
+      else if(t[cont0][cont1] == 1) {
+        printf("\033[1;31m");
+      }
+      else if(t[cont0][cont1] == 2) {
+        printf("\033[0;31m");
+      }
+      else if(t[cont0][cont1] == 3) {
+        printf("\033[0;35m");
+      }
+      else if(t[cont0][cont1] == 4) {
+        printf("\033[0;33m");
+      }
+      else if(t[cont0][cont1] == 5) {
+        printf("\033[0;32m");
+      }
+      else if(t[cont0][cont1] == 6) {
+        printf("\033[0;36m");
+      }
+      else if(t[cont0][cont1] == 7) {
+        printf("\033[0;34m");
+      }
+      else if(t[cont0][cont1] == 8) {
+        printf("\033[1;35m");
+      }
+      else if(t[cont0][cont1] == 9) {
+        printf("\033[1;37m");
+      }
+      
+      printf("O");
+      printf("\033[0m");
+    }
+  }
+
+  printf("\n\n");
+  
+  return 0;
+}*/
+
 
 //Funcao que verifica a possibilidade de mover uma pecao de posicao
-int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int dy) {
+int mover(int estatico[10][24], int peca[4][4], int *posx, int *posy, int dx, int dy) {
   int cont0;
   int cont1;
 
@@ -143,12 +179,12 @@ int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int 
 
       //Condicional para verificar se o bloco atual da peca, caso preenchido, "sai" do limite da tela apos o deslocamento
       //Se passar, significa que o movimento e impossivel
-      if ((peca[cont0][cont1] != 0) && (((cont0 + posx + dx) < 0) || ((cont1 + posy + dy) < 0) || ((cont0 + posx + dx) > 9) || ((cont1 + posy + dy) > 23))) {
+      if ((peca[cont0][cont1] != 0) && (((cont0 + (*posx) + dx) < 0) || ((cont1 + (*posy) + dy) < 0) || ((cont0 + (*posx) + dx) > 9) || ((cont1 + (*posy) + dy) > 23))) {
         result = 1;
       }
       //Condicional para verificar se o bloco atual da peca, caso preenchido, sobreporia os blocos ja estaticos apos o deslocamento
       //Se passar, significa que o movimento e impossivel
-      else if ((peca[cont0][cont1] != 0) && (estatico[(cont0 + posx + dx)][(cont1 + posy + dy)] != 0)) {
+      else if ((peca[cont0][cont1] != 0) && (estatico[(cont0 + (*posx) + dx)][(cont1 + (*posy) + dy)] != 0)) {
         result = 1;
       }
     }
@@ -156,8 +192,8 @@ int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int 
 
   //Se nao houve obstrucao, ocorre o movimento (atualiza a posicao em relacao ao deslocamento requerido)
   if(result == 0) {
-    posx = (posx + dx);
-    posy = (posy + dy);
+    *posx = (*posx + dx);
+    *posy = (*posy + dy);
   }
 
   //Retorna se a operacao foi bem-sucedida (0) ou nao (1)
@@ -166,22 +202,21 @@ int mover(int estatico[10][24], int peca[4][4], int posx, int posy, int dx, int 
 
 
 //Funcao que detecta uma linha preenchida totalmente e apaga o conteudo
-int implodir(int estatico[10][24]) {
+int implodir(int (*estatico)[10][24]) {
   int cont0;
   int cont1;
   
   int result0 = 1;
-  int result1;
 
   //Percorre linha por linha, de cima a baixo
   for(cont1 = 23; cont0 >= 0; cont1--) {
-    result1 = 0;
+    int result1 = 0;
 
     //E coluna por coluna, da esquerda para a direita
     for(cont0 = 0; cont0 < 10; cont1++) {
       
       //Caso seja encontrado um espaco vazio na linha, sabemos que nao pode ser eliminada
-      if(estatico[cont0][cont1] == 0) {
+      if((*estatico)[cont0][cont1] == 0) {
         result1 = 1;
       }
     }
@@ -192,7 +227,7 @@ int implodir(int estatico[10][24]) {
 
       //A linha sera eliminada
       for(cont0 = 0; cont0 < 10; cont1++) {
-        estatico[cont0][cont1] = 0;
+        (*estatico)[cont0][cont1] = 0;
       }
     }
   }
@@ -201,15 +236,14 @@ int implodir(int estatico[10][24]) {
 }
 
 //Funcao que move para baixo as pecas acima da linha eliminada
-int cascada(int estatico[10][24], int inicio) {
+int cascada(int (*estatico)[10][24], int inicio) {
   int cont0;
   int cont1;
 
   for(cont1 = inicio; cont1 >= 0; cont1--) {
     
     for(cont0 = 0; cont0 < 10; cont1++) {
-      estatico[cont0][cont1+1] = estatico[cont0][cont1];
-      estatico[cont0][cont1] = 0;
+      (*estatico)[cont0][(cont1 + 1)] = (*estatico)[cont0][cont1];
     }
   }
 
@@ -233,11 +267,11 @@ int main ( void ) {
   int trows;*/
 
   //Inicia com 0 os espacos de jogo e da peca
-  preenche_zero_10_x_24(estatico);
-  preenche_zero_4_x_4(peca);
+  preenche_zero_10_x_24(&estatico);
+  preenche_zero_4_x_4(&peca);
 
-  //Gera um indice de cor aleatorio entre 1 e 12
-  int rColor = ((rand() % 12) + 1);
+  //Gera um indice de cor aleatorio entre 1 e 9
+  int rColor = ((rand() % 9) + 1);
 
   //Preenche os espacos da matriz da peca com o indice da cor
   peca[0][0] = rColor;
@@ -245,16 +279,16 @@ int main ( void ) {
   peca[0][2] = rColor;
   peca[1][0] = rColor;
   
-  preenche_zero_10_x_24(tela);
-  une_matriz(tela, estatico, peca, posx, posy);
+  preenche_zero_10_x_24(&tela);
+  une_matriz(&tela, estatico, peca, posx, posy);
   desenha_matriz(tela);
 
   //Movimenta a peça
   for(cont = 0; cont < 30; cont++){
-    mover(estatico, peca, posx, posy, 0, 1);
+    mover(estatico, peca, &posx, &posy, 0, 1);
     
-    preenche_zero_10_x_24(tela);
-    une_matriz(tela, estatico, peca, posx, posy);
+    preenche_zero_10_x_24(&tela);
+    une_matriz(&tela, estatico, peca, posx, posy);
     desenha_matriz(tela);
     
     sleep(1);
