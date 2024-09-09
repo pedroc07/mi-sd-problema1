@@ -88,36 +88,21 @@ int desenha_matriz(int t[10][24]){
         video_box(posx1, posy1, posx2, posy2, video_YELLOW);
       }
       else if(t[cont0][cont1] == 5) {
-        video_box(posx1, posy1, posx2, posy2, video_LIME);
-      }
-      else if(t[cont0][cont1] == 6) {
         video_box(posx1, posy1, posx2, posy2, video_GREEN);
       }
-      else if(t[cont0][cont1] == 7) {
-        video_box(posx1, posy1, posx2, posy2, video_LIGHT_BLUE);
-      }
-      else if(t[cont0][cont1] == 8) {
+      else if(t[cont0][cont1] == 6) {
         video_box(posx1, posy1, posx2, posy2, video_CYAN);
       }
-      else if(t[cont0][cont1] == 9) {
+      else if(t[cont0][cont1] == 7) {
         video_box(posx1, posy1, posx2, posy2, video_BLUE);
       }
-      else if(t[cont0][cont1] == 10) {
+      else if(t[cont0][cont1] == 8) {
         video_box(posx1, posy1, posx2, posy2, video_MAGENTA);
       }
-      else if(t[cont0][cont1] == 11) {
-        video_box(posx1, posy1, posx2, posy2, video_PURPLE);
+      else if(t[cont0][cont1] == 9) {
+        video_box(posx1, posy1, posx2, posy2, video_GREY);
       }
-      else if(t[cont0][cont1] == 12) {
-        video_box(posx1, posy1, posx2, posy2, video_BROWN);
-      }
-      else if(t[cont0][cont1] == 13) {
-        video_box(posx1, posy1, posx2, posy2, video_GRAY);
-      }
-      else if(t[cont0][cont1] == 14) {
-        video_box(posx1, posy1, posx2, posy2, video_LIGHT_GRAY);
-      }
-      else if(t[cont0][cont1] == 15) {
+      else if(t[cont0][cont1] == 10) {
         video_box(posx1, posy1, posx2, posy2, video_BLACK);
       }
     }
