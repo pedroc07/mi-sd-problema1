@@ -125,10 +125,7 @@ int desenha_matriz(int t[10][24]){
 
     for(cont0 = 0; cont0 < 10; cont0++){
       
-      if (t[cont0][cont1] == 0) {
-        printf("\033[0;37m");
-      }
-      else if(t[cont0][cont1] == 1) {
+      if(t[cont0][cont1] == 1) {
         printf("\033[1;31m");
       }
       else if(t[cont0][cont1] == 2) {
@@ -138,16 +135,16 @@ int desenha_matriz(int t[10][24]){
         printf("\033[0;35m");
       }
       else if(t[cont0][cont1] == 4) {
-        printf("\033[0;33m");
+        printf("\033[1;33m");
       }
       else if(t[cont0][cont1] == 5) {
-        printf("\033[0;32m");
+        printf("\033[1;32m");
       }
       else if(t[cont0][cont1] == 6) {
-        printf("\033[0;36m");
+        printf("\033[1;36m");
       }
       else if(t[cont0][cont1] == 7) {
-        printf("\033[0;34m");
+        printf("\033[1;34m");
       }
       else if(t[cont0][cont1] == 8) {
         printf("\033[1;35m");
@@ -156,7 +153,13 @@ int desenha_matriz(int t[10][24]){
         printf("\033[1;37m");
       }
       
-      printf("O");
+      if (t[cont0][cont1] == 0) {
+        printf("-");
+      }
+      else {
+        printf("#");
+      }
+      
       printf("\033[0m");
     }
   }
