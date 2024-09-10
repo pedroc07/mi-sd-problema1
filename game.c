@@ -1,6 +1,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <time.h>
 #include <intelfpgaup/video.h>
 
 
@@ -271,6 +272,7 @@ int main ( void ) {
   preenche_zero_4_x_4(&peca);
 
   //Gera um indice de cor aleatorio entre 1 e 9
+  srand (time(NULL));
   int rColor = ((rand() % 9) + 1);
 
   //Preenche os espacos da matriz da peca com o indice da cor
