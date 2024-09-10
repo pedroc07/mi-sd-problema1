@@ -2,6 +2,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <time.h>
+# include <sys/time.h>
+
 #include <intelfpgaup/video.h>
 
 
@@ -154,10 +156,10 @@ int desenha_matriz(int t[10][24]){
       }
       
       if (t[cont0][cont1] == 0) {
-        printf("-");
+        printf("- ");
       }
       else {
-        printf("#");
+        printf("# ");
       }
       
       printf("\033[0m");
@@ -255,51 +257,105 @@ int cascada(int (*estatico)[10][24], int inicio) {
 }
 
 
-int main ( void ) {
-  int cont;
+//Funcao que preenche os espacos da peca desejada
+int gerar_peca(int (*peca)[4][4], int forma, int cor) {
+  preenche_zero_4_x_4(peca);
 
+  if(forma == 0) {
+    (*peca)[0][0] = cor;
+    (*peca)[0][1] = cor;
+    (*peca)[0][2] = cor;
+    (*peca)[1][0] = cor;
+  }
+  else if(forma == 1) {
+    (*peca)[0][0] = cor;
+    (*peca)[1][1] = cor;
+    (*peca)[1][2] = cor;
+    (*peca)[1][0] = cor;
+  }
+  else if(forma == 2) {
+    (*peca)[0][0] = cor;
+    (*peca)[0][1] = cor;
+    (*peca)[0][2] = cor;
+    (*peca)[0][3] = cor;
+  }
+  else if(forma == 3) {
+    (*peca)[0][0] = cor;
+    (*peca)[1][0] = cor;
+    (*peca)[2][0] = cor;
+    (*peca)[3][0] = cor;
+  }
+  else if(forma == 4) {
+    (*peca)[0][1] = cor;
+    (*peca)[1][1] = cor;
+    (*peca)[2][1] = cor;
+    (*peca)[1][0] = cor;
+  }
+  else if(forma == 5) {
+    (*peca)[0][0] = cor;
+    (*peca)[1][0] = cor;
+    (*peca)[2][0] = cor;
+    (*peca)[1][1] = cor;
+  }
+ 
+  return 0;
+}
+
+
+int main ( void ) {
+  
+  //Matriz de exibicao, objetos estaticos e peca em movimento, respectivamente
   int tela[10][24];
   int estatico[10][24];
   int peca[4][4];
 
+  //Posicao inicial da peca
   int posx = 4;
   int posy = 0;
-  
-  /*int cols;
-  int rows;
-  int tcols;
-  int trows;*/
 
   //Inicia com 0 os espacos de jogo e da peca
   preenche_zero_10_x_24(&estatico);
   preenche_zero_4_x_4(&peca);
 
+  //Obtem o tempo em microsegundos e em segundos, para uso na seed do RNG do formato da peca e da cor
+  struct timeval tempo;
+  gettimeofday(&tempo, NULL);
+  int tempo_preciso = tempo.tv_usec;
+  int tempo_simples = tempo.tv_sec;
+  
+  //Gera um indice do formato da peca aleatorio
+  srand (tempo_preciso);
+  int rShape = (rand() % 6);
+  
   //Gera um indice de cor aleatorio entre 1 e 9
-  srand (time(NULL));
+  srand(tempo_simples);
   int rColor = ((rand() % 9) + 1);
 
-  //Preenche os espacos da matriz da peca com o indice da cor
-  peca[0][0] = rColor;
-  peca[0][1] = rColor;
-  peca[0][2] = rColor;
-  peca[1][0] = rColor;
-  
-  preenche_zero_10_x_24(&tela);
+  //"Cria" uma peca com as caracteristicas desejadas
+  gerar_peca(&peca, rShape, rColor);
+
+  //Display inicial da tela
   une_matriz(&tela, estatico, peca, posx, posy);
   desenha_matriz(tela);
 
-  //Movimenta a peça
-  for(cont = 0; cont < 30; cont++){
+  //Movimenta a peça e exibe
+  int cont;
+  for(cont = 0; cont < 32; cont++){
+    sleep(1);
+
     mover(estatico, peca, &posx, &posy, 0, 1);
-    
-    preenche_zero_10_x_24(&tela);
+
     une_matriz(&tela, estatico, peca, posx, posy);
     desenha_matriz(tela);
-    
-    sleep(1);
   }
+  
+  return 0;
 
-  /*
+  /*int cols;
+  int rows;
+  int tcols;
+  int trows;
+
     video_open();
     // Desenha o quadrado na tela
     for(cont = 0; cont < 10; cont++)
@@ -319,22 +375,5 @@ int main ( void ) {
     }
   video_read (&cols, &rows, &tcols, &trows);
   video_close();
-  printf("Colunas: %d\nLinhas: %d", * cols, * rows);
-  */
-return 0;
+  printf("Colunas: %d\nLinhas: %d", * cols, * rows);*/
 }
-
-/*int imprime_tela(int t[10][20]){
-    int cont0;
-    int cont1;
-    for(cont0 = 0; cont0 < 10; cont0++)
-  {
-        for(cont1 = 0; cont1 < 20; cont1++){
-            printf("%d", t[cont0][cont1]);
-        }
-        printf("\n");
-  }
-  return 0;
-  
-}
-*/
