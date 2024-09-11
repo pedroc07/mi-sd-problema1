@@ -4,7 +4,7 @@
 # include <time.h>
 # include <sys/time.h>
 
-#include <intelfpgaup/video.h>
+# include <intelfpgaup/video.h>
 
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
@@ -26,7 +26,7 @@ int preenche_zero_10_x_24(int (*tela)[10][24]) {
 int preenche_zero_4_x_4(int (*tela)[4][4]) {
     int cont0;
     int cont1;
-  
+
   for(cont0 = 0; cont0 < 4; cont0++) {
     
     for(cont1 = 0; cont1 < 4; cont1++){
@@ -56,6 +56,7 @@ int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int po
 
   return 0;
 }
+
 
 //Funcao que desenha uma matriz 10x24 em uma tela 320x240, preenchendo a altura da tela e centralizada na largura da mesma
 int desenha_matriz(int t[10][24]){
@@ -211,34 +212,34 @@ int mover(int estatico[10][24], int peca[4][4], int *posx, int *posy, int dx, in
 int implodir(int (*estatico)[10][24]) {
   int cont0;
   int cont1;
-  
-  int result0 = 1;
 
   //Percorre linha por linha, de cima a baixo
-  for(cont1 = 23; cont0 >= 0; cont1--) {
-    int result1 = 0;
+  for(cont1 = 0; cont1 < 24; cont1++) {
+    int result = 0;
+    int line = (23-cont1);
 
     //E coluna por coluna, da esquerda para a direita
-    for(cont0 = 0; cont0 < 10; cont1++) {
+    for(cont0 = 0; cont0 < 10; cont0++) {
       
       //Caso seja encontrado um espaco vazio na linha, sabemos que nao pode ser eliminada
-      if((*estatico)[cont0][cont1] == 0) {
-        result1 = 1;
+      if((*estatico)[cont0][line] == 0) {
+        result = 1;
       }
     }
 
     //Se nao existiram espacos vazios
-    if(result1 == 0){
-      result0 = 0;
-
+    if(result == 0){
+      
       //A linha sera eliminada
-      for(cont0 = 0; cont0 < 10; cont1++) {
-        (*estatico)[cont0][cont1] = 0;
+      for(cont0 = 0; cont0 < 10; cont0++) {
+        (*estatico)[cont0][line] = 0;
       }
+
+      return line;
     }
   }
 
-  return result0;
+  return (-1);
 }
 
 //Funcao que move para baixo as pecas acima da linha eliminada
@@ -246,9 +247,9 @@ int cascada(int (*estatico)[10][24], int inicio) {
   int cont0;
   int cont1;
 
-  for(cont1 = inicio; cont1 >= 0; cont1--) {
+  for(cont1 = (inicio - 1); cont1 >= 0; cont1--) {
     
-    for(cont0 = 0; cont0 < 10; cont1++) {
+    for(cont0 = 0; cont0 < 10; cont0++) {
       (*estatico)[cont0][(cont1 + 1)] = (*estatico)[cont0][cont1];
     }
   }
@@ -302,6 +303,37 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
 }
 
 
+//Funcao que detecta o movimento
+//Versao de teste (pre-programada)
+int detectar_comando(int contador_loop) {
+  int direcao = 0;
+  
+  if(contador_loop == 10) {
+    direcao = 1;
+  }
+  else if(contador_loop == 30) {
+    direcao = 1;
+  }
+  else if(contador_loop == 45) {
+    direcao = 1;
+  }
+  else if(contador_loop == 205) {
+    direcao = -1;
+  }
+  else if(contador_loop == 211) {
+    direcao = -1;
+  }
+  else if(contador_loop == 214) {
+    direcao = -1;
+  }
+  else if(contador_loop == 215) {
+    direcao = -1;
+  }
+
+  return direcao;
+}
+
+
 int main ( void ) {
   
   //Matriz de exibicao, objetos estaticos e peca em movimento, respectivamente
@@ -309,13 +341,21 @@ int main ( void ) {
   int estatico[10][24];
   int peca[4][4];
 
-  //Posicao inicial da peca
-  int posx = 4;
-  int posy = 0;
-
   //Inicia com 0 os espacos de jogo e da peca
   preenche_zero_10_x_24(&estatico);
   preenche_zero_4_x_4(&peca);
+
+  estatico[0][23] = 3;
+  estatico[1][23] = 7;
+  estatico[2][23] = 5;
+  estatico[3][23] = 1;
+  estatico[4][23] = 2;
+  estatico[8][23] = 4;
+  estatico[9][23] = 6;
+
+  //Posicao inicial da peca
+  int posx = 4;
+  int posy = 0;
 
   //Obtem o tempo em microsegundos e em segundos, para uso na seed do RNG do formato da peca e da cor
   struct timeval tempo;
@@ -338,15 +378,89 @@ int main ( void ) {
   une_matriz(&tela, estatico, peca, posx, posy);
   desenha_matriz(tela);
 
-  //Movimenta a peça e exibe
+  //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundo)
+  struct timespec intervalo;
+  intervalo.tv_sec = 0;
+  intervalo.tv_nsec = 10000000;
+
+  //Quantidade de ciclos entre cada vez que o comando de movimento pode ser recebido
+  int espera_maxima = 10;
+
+  //Contador de ciclos para o "cooldown" da acao de mover
+  int espera_comando = 10;
+  
   int cont;
-  for(cont = 0; cont < 32; cont++){
-    sleep(1);
+  //Loop da sessao de jogo
+  for(cont = 1; cont < 4801; cont++) {
+    //Sleep de acordo com o clock da aplicacao
+    nanosleep(&intervalo, NULL);
 
-    mover(estatico, peca, &posx, &posy, 0, 1);
+    //Acoes executadas a cada ciclo do clock
+    if((cont % 1) == 0) {
+      
+      //Se ja passou o intervalo necessario para a acao de movimento, ve se esta pedindo isso
+      if(espera_comando == espera_maxima) {
+        int direcao_movimento = detectar_comando(cont);
 
-    une_matriz(&tela, estatico, peca, posx, posy);
-    desenha_matriz(tela);
+        if(direcao_movimento != 0) {
+          espera_comando = 1;
+          mover(estatico, peca, &posx, &posy, direcao_movimento, 0);
+
+          //Desenha os novos elementos na tela
+          une_matriz(&tela, estatico, peca, posx, posy);
+          desenha_matriz(tela);
+        }
+      }
+      //Caso contrario, aumenta o contador do "cooldown"
+      else {
+        espera_comando = (espera_comando + 1);
+      }
+    }
+    
+    //Acoes executadas a cada 50 ciclos do clock
+    if ((cont % 50) == 0) {
+      
+      //Move a peca um espaco para baixo e verifica se houve obstrucao ao executar acao de mover
+      int resultado_mover = mover(estatico, peca, &posx, &posy, 0, 1);
+      
+      //Se houve obstrucao, significa que a peca sera colocada e acontecera uma verificacao para "implodir" linhas
+      //Tambem reseta a peca atual
+      if(resultado_mover == 1) {
+        //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
+        une_matriz(&estatico, estatico, peca, posx, posy);
+        
+        //Tenta eliminar linhas e guarda o resultado
+        int linha_eliminada = implodir(&estatico);
+
+        //Caso elimine linha, continua tentando ate nao mais eliminar
+        while (linha_eliminada != (-1)) {
+          cascada(&estatico, linha_eliminada);
+          linha_eliminada = implodir(&estatico);
+        }
+
+        //"Reset" da peca
+        preenche_zero_4_x_4(&peca);
+
+        posx = 4;
+        posy = 0;
+
+        gettimeofday(&tempo, NULL);
+        tempo_preciso = tempo.tv_usec;
+        tempo_simples = tempo.tv_sec;
+        
+        srand (tempo_preciso);
+        rShape = (rand() % 6);
+        
+        srand(tempo_simples);
+        rColor = ((rand() % 9) + 1);
+
+        gerar_peca(&peca, rShape, rColor);
+      }
+
+      //Desenha os novos elementos na tela
+      une_matriz(&tela, estatico, peca, posx, posy);
+      desenha_matriz(tela);
+    }
   }
   
   return 0;
