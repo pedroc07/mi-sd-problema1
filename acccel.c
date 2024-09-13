@@ -12,7 +12,7 @@ int main(){
 
     while(1){
         if(ADXL345_IsDataReady()){
-            ADXL345_XYZ_Read(XYZ)
+            ADXL345_XYZ_Read(XYZ);
             printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
         }
     }
