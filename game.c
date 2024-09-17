@@ -180,9 +180,26 @@ int desenha_pontos(int pontos){
 
   printf("\n");
   printf("PONTUACAO: %d", pontos);
-  printf("\n");
 
   return 0;
+}
+
+//Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo"
+//Versao de teste (print)
+int desenha_estado(int estado_jogo, int linha_limite) {
+
+  if(estado_jogo == 0) {
+    printf("\n");
+    printf("%d", linha_limite);
+  }
+  else if(estado_jogo == 1) {
+    printf("\n");
+    printf("JOGO PAUSADO");
+  }
+  else if(estado_jogo == 3) {
+    printf("\n");
+    printf("FIM DA PARTIDA. INICIE UMA NOVA PARTIDA PARA CONTINUAR JOGANDO.");
+  }
 }
 
 
@@ -355,10 +372,7 @@ int ler_comando(int contador_loop) {
   if((contador_loop >= 100) && (contador_loop < 500)) {
     estado = 1;
   }
-  else if((contador_loop >= 500) && (contador_loop < 3000)) {
-    estado = 0;
-  }
-  else if(contador_loop == 3000) {
+  else if(contador_loop == 9000) {
     estado = 2;
   }
 
@@ -372,6 +386,9 @@ int main ( void ) {
   int tela[10][24];
   int estatico[10][24];
   int peca[4][4];
+
+  //Linha limite (minima de cima para baixo) para colocacao das pecas
+  int linha_limite = 7;
 
   //Loop externo que serve para reiniciar o game caso o interno seja quebrado
   while(1 == 1) {
@@ -388,6 +405,9 @@ int main ( void ) {
     estatico[4][23] = 2;
     estatico[8][23] = 4;
     estatico[9][23] = 6;
+
+    //Contador de ciclos do game, usado para testes
+    int cont = 0;
 
     //Posicao inicial da peca
     int posx = 4;
@@ -413,10 +433,14 @@ int main ( void ) {
     //Contador de pontos
     int contador_pontos = 0;
 
+    //Obtem o estado do jogo
+    int estado_jogo = ler_comando(cont);
+
     //Display inicial da tela
     une_matriz(&tela, estatico, peca, posx, posy);
     desenha_matriz(tela);
     desenha_pontos(contador_pontos);
+    desenha_estado(estado_jogo, linha_limite);
 
     //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundos)
     struct timespec intervalo;
@@ -425,12 +449,9 @@ int main ( void ) {
 
     //Contador de ciclos para o "cooldown" da acao de mover
     int contador_movimento = 10;
-    
-    //Contador de ciclos do game, usado para testes
-    int cont = 0;
 
-    //Obtem o estado do jogo
-    int estado_jogo = ler_comando(cont);
+    //Variavel para determinar se esta sendo pedida exibicao do estado
+    int quer_exibir_estado = 0;
     
     //Loop interno da sessao de jogo
     while(estado_jogo != 2) {
@@ -441,8 +462,16 @@ int main ( void ) {
       //Atualiza o estado do jogo
       estado_jogo = ler_comando(cont);
 
+      //Exibe o estado caso requisitado apos outras exibicoes
+      if((quer_exibir_estado == 1) && (estado_jogo != 0)) {
+        desenha_estado(estado_jogo, linha_limite);
+        quer_exibir_estado = 0;
+      }
+
       //Acoes executadas a cada ciclo do clock
       if(((cont % 1) == 0) && (estado_jogo == 0)) {
+
+        quer_exibir_estado = 1;
 
         //Obtem o vetor movimento
         int valor_movimento = ler_movimento(cont);
@@ -474,6 +503,7 @@ int main ( void ) {
             une_matriz(&tela, estatico, peca, posx, posy);
             desenha_matriz(tela);
             desenha_pontos(contador_pontos);
+            desenha_estado(estado_jogo, linha_limite);
           }
         }
         //Caso contrario, aumenta o contador do "cooldown"
@@ -484,15 +514,22 @@ int main ( void ) {
       
       //Acoes executadas a cada 50 ciclos do clock
       if(((cont % 50) == 0) && (estado_jogo == 0)) {
+
+        quer_exibir_estado = 1;
         
         //Move a peca um espaco para baixo e verifica se houve obstrucao ao executar acao de mover
         int resultado_mover = mover(estatico, peca, &posx, &posy, 0, 1);
         
         //Se houve obstrucao, significa que a peca sera colocada e acontecera uma verificacao para "implodir" linhas
         //Tambem reseta a peca atual
+        //Por fim, verifica se a peca colocada esta dentro dos limites da area de jogo, para ver se configura "game over"
         if(resultado_mover == 1) {
+          
           //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
           une_matriz(&estatico, estatico, peca, posx, posy);
+
+          //A peca atual deixa de existir
+          preenche_zero_4_x_4(&peca);
           
           //Tenta eliminar linhas e guarda o resultado
           int linha_eliminada = implodir(&estatico);
@@ -508,33 +545,54 @@ int main ( void ) {
             linha_eliminada = implodir(&estatico);
           }
 
-          //"Reset" da peca
-          preenche_zero_4_x_4(&peca);
+          //Verificacao do limite do jogo
+          //Se estiver nos limites, o jogo continua
+          if (posy > linha_limite) {
 
-          posx = 4;
-          posy = 0;
+            //"Reset" da peca
+            posx = 4;
+            posy = 0;
 
-          gettimeofday(&tempo, NULL);
-          tempo_preciso = tempo.tv_usec;
-          tempo_simples = tempo.tv_sec;
-          
-          srand (tempo_preciso);
-          rShape = (rand() % 6);
-          
-          srand(tempo_simples);
-          rColor = ((rand() % 9) + 1);
+            gettimeofday(&tempo, NULL);
+            tempo_preciso = tempo.tv_usec;
+            tempo_simples = tempo.tv_sec;
+            
+            srand (tempo_preciso);
+            rShape = (rand() % 6);
+            
+            srand(tempo_simples);
+            rColor = ((rand() % 9) + 1);
 
-          gerar_peca(&peca, rShape, rColor);
+            gerar_peca(&peca, rShape, rColor);
+          }
+          else {
+            estado_jogo = 3;
+          }
         }
 
         //Desenha os novos elementos na tela
         une_matriz(&tela, estatico, peca, posx, posy);
         desenha_matriz(tela);
         desenha_pontos(contador_pontos);
+        desenha_estado(estado_jogo, linha_limite);
+      }
+
+      //Artificio para "prender" a execucao do programa quando o estado acabar sendo 3 (so permite sair caso seja mudado para estado 2)
+      //Estado 3 significa "fim de jogo", sendo por isso que so permite ser mudado para "restart"
+      if (estado_jogo == 3) {
+        
+        while(estado_jogo != 2) {
+          estado_jogo = ler_comando(cont);
+        }
       }
 
       //Sobe o contador de ciclos utilizado para testes
       cont = (cont + 1);
+    }
+
+    //Artificio para "prender" a execucao do programa ate que o input de restart seja "solto"
+    while(estado_jogo == 2) {
+      estado_jogo = ler_comando(cont);
     }
   }
   
