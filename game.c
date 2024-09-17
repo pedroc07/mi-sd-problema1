@@ -172,6 +172,19 @@ int desenha_matriz(int t[10][24]){
   return 0;
 }*/
 
+//Funcao que exibe a pontuacao do jogador na tela
+//Versao de teste (print)
+int desenha_pontos(int pontos){
+  int cont0;
+  int cont1;
+
+  printf("\n");
+  printf("PONTUACAO: %d", pontos);
+  printf("\n");
+
+  return 0;
+}
+
 
 //Funcao que verifica a possibilidade de mover uma pecao de posicao
 int mover(int estatico[10][24], int peca[4][4], int *posx, int *posy, int dx, int dy) {
@@ -303,34 +316,53 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
 }
 
 
-//Funcao que detecta o movimento
+//Funcao que interpreta o movimento
+//A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
 //Versao de teste (pre-programada)
-int detectar_comando(int contador_loop) {
+int ler_movimento(int contador_loop) {
   int direcao = 0;
   
   if(contador_loop == 10) {
-    direcao = 1;
+    direcao = 10;
   }
   else if(contador_loop == 30) {
-    direcao = 1;
+    direcao = 10;
   }
   else if(contador_loop == 45) {
-    direcao = 1;
+    direcao = 10;
   }
-  else if(contador_loop == 205) {
-    direcao = -1;
+  else if(contador_loop == 705) {
+    direcao = -10;
   }
-  else if(contador_loop == 211) {
-    direcao = -1;
+  else if(contador_loop == 711) {
+    direcao = -10;
   }
-  else if(contador_loop == 214) {
-    direcao = -1;
+  else if(contador_loop == 714) {
+    direcao = -10;
   }
-  else if(contador_loop == 215) {
-    direcao = -1;
+  else if(contador_loop == 715) {
+    direcao = -10;
   }
 
   return direcao;
+}
+
+//Funcao que le a entrada atual de chaves e botoes para controle do game
+//Versao de teste (pre-programada)
+int ler_comando(int contador_loop) {
+  int estado = 0;
+  
+  if((contador_loop >= 100) && (contador_loop < 500)) {
+    estado = 1;
+  }
+  else if((contador_loop >= 500) && (contador_loop < 3000)) {
+    estado = 0;
+  }
+  else if(contador_loop == 3000) {
+    estado = 2;
+  }
+
+  return estado;
 }
 
 
@@ -341,125 +373,168 @@ int main ( void ) {
   int estatico[10][24];
   int peca[4][4];
 
-  //Inicia com 0 os espacos de jogo e da peca
-  preenche_zero_10_x_24(&estatico);
-  preenche_zero_4_x_4(&peca);
-
-  estatico[0][23] = 3;
-  estatico[1][23] = 7;
-  estatico[2][23] = 5;
-  estatico[3][23] = 1;
-  estatico[4][23] = 2;
-  estatico[8][23] = 4;
-  estatico[9][23] = 6;
-
-  //Posicao inicial da peca
-  int posx = 4;
-  int posy = 0;
-
-  //Obtem o tempo em microsegundos e em segundos, para uso na seed do RNG do formato da peca e da cor
-  struct timeval tempo;
-  gettimeofday(&tempo, NULL);
-  int tempo_preciso = tempo.tv_usec;
-  int tempo_simples = tempo.tv_sec;
-  
-  //Gera um indice do formato da peca aleatorio
-  srand (tempo_preciso);
-  int rShape = (rand() % 6);
-  
-  //Gera um indice de cor aleatorio entre 1 e 9
-  srand(tempo_simples);
-  int rColor = ((rand() % 9) + 1);
-
-  //"Cria" uma peca com as caracteristicas desejadas
-  gerar_peca(&peca, rShape, rColor);
-
-  //Display inicial da tela
-  une_matriz(&tela, estatico, peca, posx, posy);
-  desenha_matriz(tela);
-
-  //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundo)
-  struct timespec intervalo;
-  intervalo.tv_sec = 0;
-  intervalo.tv_nsec = 10000000;
-
-  //Quantidade de ciclos entre cada vez que o comando de movimento pode ser recebido
-  int espera_maxima = 10;
-
-  //Contador de ciclos para o "cooldown" da acao de mover
-  int espera_comando = 10;
-  
-  int cont;
-  //Loop da sessao de jogo
-  for(cont = 1; cont < 4801; cont++) {
-    //Sleep de acordo com o clock da aplicacao
-    nanosleep(&intervalo, NULL);
-
-    //Acoes executadas a cada ciclo do clock
-    if((cont % 1) == 0) {
-      
-      //Se ja passou o intervalo necessario para a acao de movimento, ve se esta pedindo isso
-      if(espera_comando == espera_maxima) {
-        int direcao_movimento = detectar_comando(cont);
-
-        if(direcao_movimento != 0) {
-          espera_comando = 1;
-          mover(estatico, peca, &posx, &posy, direcao_movimento, 0);
-
-          //Desenha os novos elementos na tela
-          une_matriz(&tela, estatico, peca, posx, posy);
-          desenha_matriz(tela);
-        }
-      }
-      //Caso contrario, aumenta o contador do "cooldown"
-      else {
-        espera_comando = (espera_comando + 1);
-      }
-    }
+  //Loop externo que serve para reiniciar o game caso o interno seja quebrado
+  while(1 == 1) {
     
-    //Acoes executadas a cada 50 ciclos do clock
-    if ((cont % 50) == 0) {
-      
-      //Move a peca um espaco para baixo e verifica se houve obstrucao ao executar acao de mover
-      int resultado_mover = mover(estatico, peca, &posx, &posy, 0, 1);
-      
-      //Se houve obstrucao, significa que a peca sera colocada e acontecera uma verificacao para "implodir" linhas
-      //Tambem reseta a peca atual
-      if(resultado_mover == 1) {
-        //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
-        une_matriz(&estatico, estatico, peca, posx, posy);
-        
-        //Tenta eliminar linhas e guarda o resultado
-        int linha_eliminada = implodir(&estatico);
+    //Inicia com 0 os espacos de jogo e da peca
+    preenche_zero_10_x_24(&estatico);
+    preenche_zero_4_x_4(&peca);
 
-        //Caso elimine linha, continua tentando ate nao mais eliminar
-        while (linha_eliminada != (-1)) {
-          cascada(&estatico, linha_eliminada);
-          linha_eliminada = implodir(&estatico);
+    //Preenche certos espacos da matriz estatica para fins de teste
+    estatico[0][23] = 3;
+    estatico[1][23] = 7;
+    estatico[2][23] = 5;
+    estatico[3][23] = 1;
+    estatico[4][23] = 2;
+    estatico[8][23] = 4;
+    estatico[9][23] = 6;
+
+    //Posicao inicial da peca
+    int posx = 4;
+    int posy = 0;
+
+    //Obtem o tempo em microsegundos e em segundos, para uso na seed do RNG do formato da peca e da cor
+    struct timeval tempo;
+    gettimeofday(&tempo, NULL);
+    int tempo_preciso = tempo.tv_usec;
+    int tempo_simples = tempo.tv_sec;
+    
+    //Gera um indice do formato da peca aleatorio
+    srand (tempo_preciso);
+    int rShape = (rand() % 6);
+    
+    //Gera um indice de cor aleatorio entre 1 e 9
+    srand(tempo_simples);
+    int rColor = ((rand() % 9) + 1);
+
+    //"Cria" uma peca com as caracteristicas desejadas
+    gerar_peca(&peca, rShape, rColor);
+
+    //Contador de pontos
+    int contador_pontos = 0;
+
+    //Display inicial da tela
+    une_matriz(&tela, estatico, peca, posx, posy);
+    desenha_matriz(tela);
+    desenha_pontos(contador_pontos);
+
+    //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundos)
+    struct timespec intervalo;
+    intervalo.tv_sec = 0;
+    intervalo.tv_nsec = 10000000;
+
+    //Contador de ciclos para o "cooldown" da acao de mover
+    int contador_movimento = 10;
+    
+    //Contador de ciclos do game, usado para testes
+    int cont = 0;
+
+    //Obtem o estado do jogo
+    int estado_jogo = ler_comando(cont);
+    
+    //Loop interno da sessao de jogo
+    while(estado_jogo != 2) {
+      
+      //Sleep de acordo com o clock da aplicacao
+      nanosleep(&intervalo, NULL);
+
+      //Atualiza o estado do jogo
+      estado_jogo = ler_comando(cont);
+
+      //Acoes executadas a cada ciclo do clock
+      if(((cont % 1) == 0) && (estado_jogo == 0)) {
+
+        //Obtem o vetor movimento
+        int valor_movimento = ler_movimento(cont);
+
+        //Espera maxima e direcao do movimento
+        int espera_maxima;
+        int direcao_movimento;
+
+        //Atualiza a espera maxima e o vetor unitario do movimento de acordo com o valor do movimento, caso a funcao de ler o movimento retorne valor diferente de 0
+        if (valor_movimento != 0) {
+          espera_maxima = (abs(valor_movimento));
+          direcao_movimento = (valor_movimento/espera_maxima);
+        }
+        //Caso retorne zero, isso quer dizer que nao houve movimento algum
+        else {
+          espera_maxima = 10;
+          direcao_movimento = 0;
+        }
+        
+        //Se ja passou o intervalo necessario para a acao de movimento, ve se esta pedindo isso
+        if(contador_movimento >= espera_maxima) {
+          
+          //Executa o movimento
+          if(direcao_movimento != 0) {
+            contador_movimento = 1;
+            mover(estatico, peca, &posx, &posy, direcao_movimento, 0);
+
+            //Desenha os novos elementos na tela
+            une_matriz(&tela, estatico, peca, posx, posy);
+            desenha_matriz(tela);
+            desenha_pontos(contador_pontos);
+          }
+        }
+        //Caso contrario, aumenta o contador do "cooldown"
+        else {
+          contador_movimento = (contador_movimento + 1);
+        }
+      }
+      
+      //Acoes executadas a cada 50 ciclos do clock
+      if(((cont % 50) == 0) && (estado_jogo == 0)) {
+        
+        //Move a peca um espaco para baixo e verifica se houve obstrucao ao executar acao de mover
+        int resultado_mover = mover(estatico, peca, &posx, &posy, 0, 1);
+        
+        //Se houve obstrucao, significa que a peca sera colocada e acontecera uma verificacao para "implodir" linhas
+        //Tambem reseta a peca atual
+        if(resultado_mover == 1) {
+          //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
+          une_matriz(&estatico, estatico, peca, posx, posy);
+          
+          //Tenta eliminar linhas e guarda o resultado
+          int linha_eliminada = implodir(&estatico);
+
+          //Caso elimine linha... 
+          while (linha_eliminada != (-1)) {
+            
+            //Aumenta a contagem de pontos
+            contador_pontos = (contador_pontos + 1);
+
+            //...E continua tentando ate nao mais eliminar
+            cascada(&estatico, linha_eliminada);
+            linha_eliminada = implodir(&estatico);
+          }
+
+          //"Reset" da peca
+          preenche_zero_4_x_4(&peca);
+
+          posx = 4;
+          posy = 0;
+
+          gettimeofday(&tempo, NULL);
+          tempo_preciso = tempo.tv_usec;
+          tempo_simples = tempo.tv_sec;
+          
+          srand (tempo_preciso);
+          rShape = (rand() % 6);
+          
+          srand(tempo_simples);
+          rColor = ((rand() % 9) + 1);
+
+          gerar_peca(&peca, rShape, rColor);
         }
 
-        //"Reset" da peca
-        preenche_zero_4_x_4(&peca);
-
-        posx = 4;
-        posy = 0;
-
-        gettimeofday(&tempo, NULL);
-        tempo_preciso = tempo.tv_usec;
-        tempo_simples = tempo.tv_sec;
-        
-        srand (tempo_preciso);
-        rShape = (rand() % 6);
-        
-        srand(tempo_simples);
-        rColor = ((rand() % 9) + 1);
-
-        gerar_peca(&peca, rShape, rColor);
+        //Desenha os novos elementos na tela
+        une_matriz(&tela, estatico, peca, posx, posy);
+        desenha_matriz(tela);
+        desenha_pontos(contador_pontos);
       }
 
-      //Desenha os novos elementos na tela
-      une_matriz(&tela, estatico, peca, posx, posy);
-      desenha_matriz(tela);
+      //Sobe o contador de ciclos utilizado para testes
+      cont = (cont + 1);
     }
   }
   
