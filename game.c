@@ -57,6 +57,68 @@ int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int po
   return 0;
 }
 
+void exibe_segmentos(int sega, int segb, int segc, int segd, int sege, int segf, int segg, int x, int y) {
+  video_open();
+  
+  while (*texto) {
+    
+    if(sega == 1) {
+      video_box(x, y, (x + 4), y, video_WHITE);
+    }
+    if(segb == 1) {
+      video_box((x + 4), y, (x + 4), (y + 4), video_WHITE);
+    }
+    if(segc == 1) {
+      video_box((x + 4), (y + 5), (x + 4), (y + 9), video_WHITE);
+    }
+    if(segd == 1) {
+      video_box(x, (y + 9), (x + 4), (y + 9), video_WHITE);
+    }
+    if(sege == 1) {
+      video_box(x, (y + 5), x, (y + 9), video_WHITE);
+    }
+    if(segf == 1) {
+      video_box(x, y, x, (y + 4), video_WHITE);
+    }
+    if(segg == 1) {
+      video_box(x, (y + 4), (x + 4), (y + 4), video_WHITE);
+    }
+  }
+
+  video_show();
+  video_close();
+}
+
+
+//Funcao que escreve texto
+void escrever_texto(int x, int y, const char *texto) {
+  
+  video_open();
+  
+  while (*texto) {
+    
+    if(*texto == "P") {
+      exibe_segmentos(1, 1, 0, 0, 1, 1, 1, x, y);
+    }
+    else if(*texto == "A") {
+      exibe_segmentos(1, 1, 1, 0, 1, 1, 1, x, y);
+    }
+    else if(*texto == "U") {
+      exibe_segmentos(0, 1, 1, 1, 1, 1, 0, x, y);
+    }
+    else if(*texto == "S") {
+      exibe_segmentos(1, 0, 1, 1, 0, 1, 1, x, y);
+    }
+
+    
+    x += 5;
+    texto++;
+  }
+
+  video_show();
+  video_close();
+}
+
 
 //Funcao que desenha uma matriz 10x24 em uma tela 320x240, preenchendo a altura da tela e centralizada na largura da mesma
 int desenha_matriz(int t[10][24]){
@@ -112,6 +174,17 @@ int desenha_matriz(int t[10][24]){
   video_show();
   video_close();
   
+  return 0;
+}
+
+//Funcao que exibe a pontuacao do jogador em uma tela 320x240, ao lado da matriz do jogo exibida na funcao anterior
+int desenha_pontos(int pontos){
+  int cont0;
+  int cont1;
+
+  printf("\n");
+  printf("PONTUACAO: %d", pontos);
+
   return 0;
 }
 
@@ -174,7 +247,7 @@ int desenha_matriz(int t[10][24]){
 
 //Funcao que exibe a pontuacao do jogador na tela
 //Versao de teste (print)
-int desenha_pontos(int pontos){
+/*int desenha_pontos(int pontos){
   int cont0;
   int cont1;
 
@@ -182,7 +255,7 @@ int desenha_pontos(int pontos){
   printf("PONTUACAO: %d", pontos);
 
   return 0;
-}
+}*/
 
 //Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo"
 //Versao de teste (print)
