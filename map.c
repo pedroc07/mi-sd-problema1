@@ -18,6 +18,8 @@
 #define ADXL345_DATAZ0 0x36
 #define ADXL345_DATAZ1 0x37
 
+volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt, *I2C0USEFPGA, *GENERALIO7, *GENERALIO8;
+
 // Funções para acessar memória física
 int open_physical(int fd) {
     if (fd == -1)
@@ -51,8 +53,34 @@ int unmap_physical(void *virtual_base, unsigned int span) {
     return 0;
 }
 
+void Pinmux_config(){
+    *I2C0USEFPGA = 0;
+    *GENERALIO7 = 1;
+    *GENERALIO8 = 1;
+
+}
+
+void I2C0_init(){
+    //Para qualquer transmissão no I2C0
+   *I2C0_enable = 2;
+   while(((*I2C0_enable_sts)&0x1) == 1){}
+   
+   //Seta o I2C como mestre e o ADXL345 como escravo
+   *I2C0_con = 0x65;
+   *I2C0_tar = 0x53;
+
+   //Seta o periodo
+   *I2C0_fs_hcnt = 60 + 30;  // 0.6us + 0.3us
+   *I2C0_fs_lcnt = 130 + 30; // 1.3us + 0.3us
+
+   //Liga o controlador
+   *I2C0_enable = 1;
+   while(((*I2C0_enable_sts)&0x1) == 0){}
+}
+
+//Realiza a leitura de vários registradores
 void multi_read(uint8_t address, uint8_t values[], uint8_t
-len, volatile int *I2C0_data){
+len){
 
     int nth_byte=0;
     int i;
@@ -65,7 +93,7 @@ len, volatile int *I2C0_data){
 
     //Lê os bytes
     while(len){
-        if ((*I2C0_RXFLR) > 0){
+        if ((*I2C0_readbuffer) > 0){
             values[nth_byte] = *I2C0_data;
             nth_byte++;
             len--;
@@ -75,7 +103,6 @@ len, volatile int *I2C0_data){
 
 
 int main(void) {
-    volatile int *I2C0_con, *I2C0_tar, *I2C0_data;
     uint8_t *valor;
     int fd = -1;
     void *LW_virtual;
@@ -87,14 +114,19 @@ int main(void) {
     if (!(LW_virtual = map_physical(fd, I2C0_BASE, I2C0_SPAN)))
         return (-1);
 
+   //Mapeamento de memória do I2C0
    I2C0_con = (int *) (LW_virtual + I2C0_CON);
    I2C0_tar = (int *) (LW_virtual + I2C0_TAR);
    I2C0_data = (int *) (LW_virtual + I2C0_DATA_CMD);
+   I2C0_readbuffer = (int *) (LW_virtual + I2C0_RXFLR);
+   I2C0_enable = (int *) (LW_virtual + I2C0_ENABLE);
+   I2C0_enable_sts = (int *) (LW_virtual + I2C0_ENABLE_STATUS);
+   //Mapeamento do multiplexador
+   /*I2C0USEFPGA = (int *) (LW_virtual + SYSMGR_I2C0USEFPGA);
+   GENERALIO7 = (int *) (LW_virtual + SYSMGR_GENERALIO7);
+   GENERALIO8 = (int *) (LW_virtual + SYSMGR_GENERALIO8);
+    */
 
-
-   //Seta o I2C como mestre e o ADXL345 como escravo
-   *I2C0_con = 0x65;
-   *I2C0_tar = 0x53;
   // *I2C0_data = *I2C0_tar + 0x400;
   // *I2C0_data = 0x100;
 
