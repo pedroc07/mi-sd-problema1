@@ -5,6 +5,7 @@
 # include <sys/time.h>
 
 # include <intelfpgaup/video.h>
+#include <intelfpgaup/SW.h>
 
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
@@ -57,6 +58,7 @@ int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int po
   return 0;
 }
 
+/*
 void exibe_segmentos(int sega, int segb, int segc, int segd, int sege, int segf, int segg, int x, int y) {
   video_open();
   
@@ -118,6 +120,7 @@ void escrever_texto(int x, int y, const char *texto) {
   video_show();
   video_close();
 }
+*/
 
 
 //Funcao que desenha uma matriz 10x24 em uma tela 320x240, preenchendo a altura da tela e centralizada na largura da mesma
@@ -183,7 +186,7 @@ int desenha_pontos(int pontos){
   int cont1;
 
   printf("\n");
-  printf("PONTUACAO: %d", pontos);
+  printf("PONTUACAO: %d\n", pontos);
 
   return 0;
 }
@@ -262,8 +265,8 @@ int desenha_pontos(int pontos){
 int desenha_estado(int estado_jogo, int linha_limite) {
 
   if(estado_jogo == 0) {
-    printf("\n");
-    printf("%d", linha_limite);
+    //printf("\n");
+    //printf("%d", linha_limite);
   }
   else if(estado_jogo == 1) {
     printf("\n");
@@ -439,18 +442,16 @@ int ler_movimento(int contador_loop) {
 
 //Funcao que le a entrada atual de chaves e botoes para controle do game
 //Versao de teste (pre-programada)
-int ler_comando(int contador_loop) {
-  int estado = 0;
-  
-  if((contador_loop >= 100) && (contador_loop < 500)) {
-    estado = 1;
-  }
-  else if(contador_loop == 9000) {
-    estado = 2;
-  }
+int ler_comando() {
+  int estado;
+
+  SW_open();
+  SW_read(&estado);
+  SW_close();
 
   return estado;
 }
+
 
 
 int main ( void ) {
@@ -507,8 +508,7 @@ int main ( void ) {
     int contador_pontos = 0;
 
     //Obtem o estado do jogo
-    int estado_jogo = ler_comando(cont);
-
+    int estado_jogo = ler_comando();
     //Display inicial da tela
     une_matriz(&tela, estatico, peca, posx, posy);
     desenha_matriz(tela);
@@ -533,7 +533,8 @@ int main ( void ) {
       nanosleep(&intervalo, NULL);
 
       //Atualiza o estado do jogo
-      estado_jogo = ler_comando(cont);
+      estado_jogo = ler_comando();
+      printf("%d", estado_jogo);
 
       //Exibe o estado caso requisitado apos outras exibicoes
       if((quer_exibir_estado == 1) && (estado_jogo != 0)) {
@@ -655,7 +656,7 @@ int main ( void ) {
       if (estado_jogo == 3) {
         
         while(estado_jogo != 2) {
-          estado_jogo = ler_comando(cont);
+          estado_jogo = ler_comando();
         }
       }
 
@@ -665,35 +666,7 @@ int main ( void ) {
 
     //Artificio para "prender" a execucao do programa ate que o input de restart seja "solto"
     while(estado_jogo == 2) {
-      estado_jogo = ler_comando(cont);
+      estado_jogo = ler_comando();
     }
   }
-  
-  return 0;
-
-  /*int cols;
-  int rows;
-  int tcols;
-  int trows;
-
-    video_open();
-    // Desenha o quadrado na tela
-    for(cont = 0; cont < 10; cont++)
-    {
-
-      video_clear();
-
-      video_box(posx[0], posy[0], posx[1], posy[1], video_WHITE);
-
-      video_show();
-
-      sleep(1);
-
-      // Move o quadrado para baixo
-      posy[0] = posy[0] + 10;
-      posy[1] = posy[1] + 10;
-    }
-  video_read (&cols, &rows, &tcols, &trows);
-  video_close();
-  printf("Colunas: %d\nLinhas: %d", * cols, * rows);*/
 }
