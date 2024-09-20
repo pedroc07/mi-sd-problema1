@@ -1,8 +1,8 @@
-# include <intelfpgaup/video.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <string.h>
+# include <intelfpgaup/video.h>
 
 int main(){
     char msg_buffer[80] = "game over";
