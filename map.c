@@ -156,9 +156,14 @@ void ADXL_XYZRead(int16_t szData16[3]){
     uint8_t szData8[6];
 
     multi_read(0x32, (uint8_t *)&szData8, sizeof(szData8));
+    /*
     szData16[0] = (szData8[1] << 8) | szData8[0];
     szData16[1] = (szData8[3] << 8) | szData8[2];
     szData16[2] = (szData8[5] << 8) | szData8[4];
+    */
+    szData16[0] = 10;
+    szData16[1] = 16;
+    szData16[2] = 3000;
 }
 
 /*
