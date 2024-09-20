@@ -85,7 +85,7 @@ void Pinmux_config(){
 void I2C0_init(){
     //Para qualquer transmissão no I2C0
    *I2C0_enable = 2;
-   printf("Desligando I2C0..");
+   printf("Desligando I2C0..\n");
    while(*I2C0_enable_sts == 1){}
 
    //Seta o I2C como mestre e o ADXL345 como escravo
@@ -98,7 +98,7 @@ void I2C0_init(){
 
    //Liga o controlador
    *I2C0_enable = 1;
-   printf("Ligando I2C0..");
+   printf("Ligando I2C0..\n");
    while(*I2C0_enable_sts == 2){}
 }
 
@@ -106,6 +106,20 @@ void I2C0_init(){
 void ADXL_write(uint8_t address, uint8_t value){
     *I2C0_data = address + 0x400;
     *I2C0_data = value;
+}
+
+
+void ADXL345_read(uint8_t address, uint8_t *value){
+
+    //Envia o endereço + sinal de START
+    *I2C0_data = address + 0x400;
+
+    //Envia um sinal de leitura
+    *I2C0_data = address + 0x400;
+
+    // Espera que os dados entrem no buffer e então lê o valor
+    while(*I2C0_readbuffer == 0){}
+    *value = *I2C0_data;
 }
 
 //Realiza a leitura de vários registradores
@@ -152,33 +166,26 @@ void ADXL_345_init(){
     ADXL_write(ADXL345_REG_POWER_CTL, XL345_MEASURE);
 }
 
-void ADXL_XYZRead(int16_t szData16[3]){
-    uint8_t szData8[6];
+void ADXL345_XYZ_Read(int16_t szData16[3],  uint8_t szData8[6]){
+    multi_read(0x32,(uint8_t *)&szData8, sizeof(*szData8));
 
-    multi_read(0x32, (uint8_t *)&szData8, sizeof(szData8));
-    /*
     szData16[0] = (szData8[1] << 8) | szData8[0];
     szData16[1] = (szData8[3] << 8) | szData8[2];
     szData16[2] = (szData8[5] << 8) | szData8[4];
-    */
-    szData16[0] = 10;
-    szData16[1] = 16;
-    szData16[2] = 3000;
 }
 
-/*
+
 int ADXL345_IsDataReady(){
     int bReady = 0;
     uint8_t data8;
 
-    read(ADXL345_REG_INT_SOURCE,&data8);
+    ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
 
     if (data8 & XL345_ACTIVITY){
         bReady = 1;
     }
     return bReady;
     }
-*/
 
 int main(void) {
     uint8_t *valor;
@@ -186,7 +193,8 @@ int main(void) {
     int fd1 = -1;
     void *LW_virtual, *SYSMGR_virtual;
     int16_t XYZ[3];
-	printf("1");
+    uint8_t data8[6];
+    //printf("1");
 
     // Abrir /dev/mem e mapear a área de memória do I2C e do SYSMGR
     if ((fd = open_physical(fd)) == -1)
@@ -214,11 +222,19 @@ int main(void) {
     I2C0_init();
     ADXL_345_init();
     //Lê os valores dos eixos
+    uint8_t value;
+    ADXL345_read(ADXL345_REG_DEVID, &value);
+    printf("ID: %x\n", value);
 
-    while(1){
-        ADXL_XYZRead(XYZ);
-        printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
-        sleep(1);
+    int x = 0;
+
+    while(x < 10){
+       if(ADXL345_IsDataReady()){
+		ADXL345_XYZ_Read(XYZ, data8);
+       		printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
+       		sleep(1);
+		x++;
+	}
     }
 
     // Desvincular e fechar
