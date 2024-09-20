@@ -763,7 +763,11 @@ int main ( void ) {
       //Artificio para "prender" a execucao do programa quando o estado acabar sendo 3 (so permite sair caso seja mudado para estado 2)
       //Estado 3 significa "fim de jogo", sendo por isso que so permite ser mudado para "restart"
       if (estado_jogo == 3) {
-        //while(Rst != 14){
+        /*while(Rst != 14){
+            Rst = ler_reset();
+          }
+          estado_jogo = ler_comando();
+        */
         while(estado_jogo != 2) {
           estado_jogo = ler_comando();
         }
