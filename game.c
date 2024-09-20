@@ -6,7 +6,7 @@
 
 # include <intelfpgaup/video.h>
 #include <intelfpgaup/SW.h>
-
+#include <intelfpgaup/KEY.h>
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
 int preenche_zero_10_x_24(int (*tela)[10][24]) {
@@ -533,13 +533,24 @@ int ler_movimento(int contador_loop) {
   return direcao;
 }
 
-//Funcao que le a entrada atual de chaves e botoes para controle do game
+//Funcao que le a entrada atual de chaves para controle do game
 int ler_comando() {
   int estado;
 
   SW_open();
   SW_read(&estado);
   SW_close();
+
+  return estado;
+}
+
+//Funcao que le a entrada atual de chaves para controle do game
+int ler_reset() {
+  int estado;
+
+  KEY_open();
+  KEY_read(&estado);
+  KEY_close();
 
   return estado;
 }
@@ -551,6 +562,7 @@ int main ( void ) {
   int tela[10][24];
   int estatico[10][24];
   int peca[4][4];
+  int Rst;
 
   //Linha limite (minima de cima para baixo) para colocacao das pecas
   int linha_limite = 7;
@@ -600,6 +612,11 @@ int main ( void ) {
 
     //Obtem o estado do jogo
     int estado_jogo = ler_comando();
+
+    //Lê o botão de reset
+    Rst = ler_reset();
+    printf("Botao: %d", Rst);
+
     //Display inicial da tela
     une_matriz(&tela, estatico, peca, posx, posy);
     desenha_matriz(tela);
@@ -746,7 +763,7 @@ int main ( void ) {
       //Artificio para "prender" a execucao do programa quando o estado acabar sendo 3 (so permite sair caso seja mudado para estado 2)
       //Estado 3 significa "fim de jogo", sendo por isso que so permite ser mudado para "restart"
       if (estado_jogo == 3) {
-        
+        //while(Rst != 14){
         while(estado_jogo != 2) {
           estado_jogo = ler_comando();
         }
