@@ -115,7 +115,7 @@ void ADXL345_read(uint8_t address, uint8_t *value){
     *I2C0_data = address + 0x400;
 
     //Envia um sinal de leitura
-    *I2C0_data = address + 0x400;
+    *I2C0_data = address + 0x100;
 
     // Espera que os dados entrem no buffer e então lê o valor
     while(*I2C0_readbuffer == 0){}
