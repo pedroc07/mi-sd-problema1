@@ -115,7 +115,7 @@ void ADXL345_read(uint8_t address, uint8_t *value){
     *I2C0_data = address + 0x400;
 
     //Envia um sinal de leitura
-    *I2C0_data = address + 0x100;
+    *I2C0_data = 0x100;
 
     // Espera que os dados entrem no buffer e então lê o valor
     while(*I2C0_readbuffer == 0){}
@@ -167,7 +167,7 @@ void ADXL_345_init(){
 }
 
 void ADXL345_XYZ_Read(int16_t szData16[3],  uint8_t (*szData8)[6]){
-    multi_read(0x32, *szData8, sizeof(*szData8));
+    multi_read(ADXL345_REG_DATAX0, *szData8, sizeof(*szData8));
 
     szData16[0] = (*szData8[1] << 8) | *szData8[0];
     szData16[1] = (*szData8[3] << 8) | *szData8[2];
@@ -188,10 +188,9 @@ int ADXL345_IsDataReady(){
     }
 
 int main(void) {
-    uint8_t *valor;
     int fd = -1;
     int fd1 = -1;
-    void *LW_virtual, *SYSMGR_virtual;
+    void *LW_virtual;
     int16_t XYZ[3];
     uint8_t data8[6];
     //printf("1");
@@ -201,30 +200,38 @@ int main(void) {
         return (-1);
     if (!(LW_virtual = map_physical(fd, I2C0_BASE, I2C0_SPAN)))
         return (-1);
+    close_physical(fd);
+
 
    //Mapeamento de memória do I2C0
    I2C0_con = (int *) (LW_virtual + I2C0_CON);
-   I2C0_tar = (int *) (LW_virtual + I2C0_TAR);
-   I2C0_data = (int *) (LW_virtual + I2C0_DATA_CMD);
-   I2C0_readbuffer = (int *) (LW_virtual + I2C0_RXFLR);
-   I2C0_enable = (int *) (LW_virtual + I2C0_ENABLE);
-   I2C0_enable_sts = (int *) (LW_virtual + I2C0_ENABLE_STATUS);
-   I2C0_fs_hcnt = (int *) (LW_virtual + I2C0_FS_SCL_HCNT);
-   I2C0_fs_lcnt = (int *) (LW_virtual + I2C0_FS_SCL_LCNT);
+   I2C0_tar = (int *) (LW_virtual + 0x4);
+   I2C0_data = (int *) (LW_virtual + 0x10);
+   I2C0_readbuffer = (int *) (LW_virtual + 0x78);
+   I2C0_enable = (int *) (LW_virtual + 0x6C);
+   I2C0_enable_sts = (int *) (LW_virtual + 0x9C);
+   I2C0_fs_hcnt = (int *) (LW_virtual + 0x1C);
+   I2C0_fs_lcnt = (int *) (LW_virtual + 0x20);
 
    //Mapeamento do multiplexador
-   I2C0USEFPGA = (int *) (LW_virtual + SYSMGR_I2C0USEFPGA);
-   GENERALIO7 = (int *) (LW_virtual + SYSMGR_GENERALIO7);
-   GENERALIO8 = (int *) (LW_virtual + SYSMGR_GENERALIO8);
+   /*
+   I2C0USEFPGA = (int *) (SYSMGR_virtual + SYSMGR_I2C0USEFPGA);
+   GENERALIO7 = (int *) (SYSMGR_virtual + SYSMGR_GENERALIO7);
+   GENERALIO8 = (int *) (SYSMGR_virtual + SYSMGR_GENERALIO8);
+   */
 
     //Configurações iniciais
-    Pinmux_config();
+    //Pinmux_config();
     I2C0_init();
+
+        uint8_t value;
+    ADXL345_read(ADXL345_REG_DEVID, &value);
+    if(value == 0xE5){
+        printf("ID: %x\n", value);
+    }
+
     ADXL_345_init();
     //Lê os valores dos eixos
-    uint8_t value;
-    ADXL345_read(ADXL345_REG_DEVID, &value);
-    printf("ID: %x\n", value);
 
     int x = 0;
 
@@ -232,6 +239,9 @@ int main(void) {
        if(ADXL345_IsDataReady()){
 		ADXL345_XYZ_Read(XYZ, &data8);
        		printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
+            XYZ[0] = 9;
+            XYZ[1] = 8;
+            XYZ[2] = 7;
        		sleep(1);
 		x++;
 	}
