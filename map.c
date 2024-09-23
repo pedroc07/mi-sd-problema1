@@ -167,12 +167,15 @@ void ADXL_345_init(){
     ADXL_write(ADXL345_REG_POWER_CTL, XL345_MEASURE);
 }
 
-void ADXL345_XYZ_Read(int16_t szData16[3],  uint8_t (*szData8)[6]){
-    multi_read(ADXL345_REG_DATAX0, *szData8, sizeof(*szData8));
+void ADXL345_XYZ_Read(int16_t szData16[3]){
+    int8_t szData8[6];
 
-    szData16[0] = (*szData8[1] << 8) | *szData8[0];
-    szData16[1] = (*szData8[3] << 8) | *szData8[2];
-    szData16[2] = (*szData8[5] << 8) | *szData8[4];
+    
+    multi_read(ADXL345_REG_DATAX0, (uint8_t *)&szData8, sizeof(szData8));
+
+    szData16[0] = (szData8[1] << 8) | szData8[0];
+    szData16[1] = (szData8[3] << 8) | szData8[2];
+    szData16[2] = (szData8[5] << 8) | szData8[4];
 }
 
 
@@ -250,11 +253,8 @@ int main(void) {
 
     while(x < 10){
        if(ADXL345_IsDataReady()){
-		ADXL345_XYZ_Read(XYZ, &data8);
+		ADXL345_XYZ_Read(XYZ);
        		printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
-            XYZ[0] = 9;
-            XYZ[1] = 8;
-            XYZ[2] = 7;
        		sleep(1);
 		x++;
 	}
