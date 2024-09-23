@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
 #include "address_map_arm.h"
 
 // ADXL345 Register List
@@ -172,6 +173,18 @@ void ADXL345_XYZ_Read(int16_t szData16[3],  uint8_t (*szData8)[6]){
     szData16[0] = (*szData8[1] << 8) | *szData8[0];
     szData16[1] = (*szData8[3] << 8) | *szData8[2];
     szData16[2] = (*szData8[5] << 8) | *szData8[4];
+}
+
+
+bool ADXL345_WasActivityUpdated(){
+    bool bReady = false;
+    uint8_t data8;
+
+    ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
+    if (data8 & XL345_ACTIVITY)
+        bReady = true;
+
+    return bReady;
 }
 
 
