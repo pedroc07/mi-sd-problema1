@@ -39,6 +39,7 @@
 #define XL345_STANDBY              0x00
 #define XL345_INACTIVITY           0x08
 #define XL345_ACTIVITY             0x10
+#define XL345_RATE_100             0x0a
 
 
 volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt, *I2C0USEFPGA, *GENERALIO7, *GENERALIO8;
@@ -201,15 +202,14 @@ int ADXL345_IsDataReady(){
         bReady = 1;
     }
     return bReady;
-    }
+}
+
 
 int main(void) {
     int fd = -1;
     int fd1 = -1;
     void *LW_virtual;
     int16_t XYZ[3];
-    uint8_t data8[6];
-    //printf("1");
 
     // Abrir /dev/mem e mapear a área de memória do I2C e do SYSMGR
     if ((fd = open_physical(fd)) == -1)
@@ -238,26 +238,28 @@ int main(void) {
 
     //Configurações iniciais
     //Pinmux_config();
+
     I2C0_init();
 
-        uint8_t value;
+    uint8_t value;
     ADXL345_read(ADXL345_REG_DEVID, &value);
+    
     if(value == 0xE5){
         printf("ID: %x\n", value);
-    }
+        
+        ADXL_345_init();
 
-    ADXL_345_init();
-    //Lê os valores dos eixos
+        int x = 0;
 
-    int x = 0;
+        while(x < 10){
+        if(ADXL345_IsDataReady()){
+            ADXL345_XYZ_Read(XYZ);
+                printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
+                usleep(1000000);
+            x++;
+            }
+        }
 
-    while(x < 10){
-       if(ADXL345_IsDataReady()){
-		ADXL345_XYZ_Read(XYZ);
-       		printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
-       		sleep(1);
-		x++;
-	}
     }
 
     // Desvincular e fechar
