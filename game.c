@@ -9,7 +9,7 @@
 #include <intelfpgaup/KEY.h>
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
-int preenche_zero_10_x_24(int (*tela)[10][24]) {
+void preenche_zero_10_x_24(int (*tela)[10][24]) {
   int cont0;
   int cont1;
   
@@ -19,12 +19,10 @@ int preenche_zero_10_x_24(int (*tela)[10][24]) {
       (*tela)[cont0][cont1] = 0;
     }
   }
-
-  return 0;
 }
 
 //Funcao que preenche com 0 todas as celulas de uma matriz 4x4
-int preenche_zero_4_x_4(int (*tela)[4][4]) {
+void preenche_zero_4_x_4(int (*tela)[4][4]) {
     int cont0;
     int cont1;
 
@@ -34,13 +32,11 @@ int preenche_zero_4_x_4(int (*tela)[4][4]) {
       (*tela)[cont0][cont1] = 0;
     }
   }
-
-  return 0;
 }
 
 
 //Funcao que une (modifica matriz tela) uma matriz com posicao absoluta de tamanho 10x24 (estatico) com uma matriz com posicao relativa de tamanho 4x4 (peca em relacao a posx e posy)
-int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int posx, int posy) {
+void une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int posx, int posy) {
   int cont0;
   int cont1;
 
@@ -54,13 +50,11 @@ int une_matriz(int (*tela)[10][24], int estatico[10][24], int peca[4][4], int po
       }
     }
   }
-
-  return 0;
 }
 
 
 //Funcao que desenha uma matriz 10x24 em uma tela 320x240, preenchendo a altura da tela e centralizada na largura da mesma
-int desenha_matriz(int t[10][24]){
+void desenha_matriz(int t[10][24]){
   int cont0;
   int cont1;
   int posx1, posx2;
@@ -106,23 +100,8 @@ int desenha_matriz(int t[10][24]){
       }
     }
   }
-
-  video_show();
-  video_close();
-  
-  return 0;
 }
 
-//Funcao que escreve texto em tela 320x240
-void escrever_texto(int x, int y, char texto[32]) {
-  
-  video_open();
-  
-  video_text(x, y, texto);
-  
-  video_show();
-  video_close();
-}
 
 //Funcao que exibe a pontuacao do jogador em uma tela 320x240, ao lado da matriz do jogo exibida na funcao anterior
 void desenha_pontos(int pontos){
@@ -133,19 +112,12 @@ void desenha_pontos(int pontos){
 
   char mensagem_pontos[32] = "PONTOS:";
 
-  video_open();
-
-  escrever_texto(240, 200, mensagem_pontos);
-  escrever_texto(240, 215, int_array);
-
-  video_show();
-  video_close();
+  video_text(240, 200, mensagem_pontos);
+  video_text(240, 215, int_array);
 }
 
 //Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo" em tela 320x240
 void desenha_estado(int estado_jogo, int linha_limite) {
-
-  video_open();
 
   //Desenha a linha limite da area de jogo
   video_box((110), (linha_limite * 10), (209), (((linha_limite + 1) * 10) - 1), video_GREY);
@@ -153,22 +125,22 @@ void desenha_estado(int estado_jogo, int linha_limite) {
   //Exibe as mensagens de estado de jogo para "pausa" e "fim de jogo"
   if(estado_jogo == 1) {
 
-    char mensagem_estado[32] = "JOGO PAUSADO";
-    escrever_texto(240, 200, mensagem_estado);
+    char mensagem_estado[12] = "JOGO PAUSADO";
+    video_text(240, 200, mensagem_estado);
   }
   else if(estado_jogo == 3) {
     
-    char mensagem_estado[32] = "FIM DE JOGO";
-    escrever_texto(240, 100, mensagem_estado);
+    char mensagem_estado[11] = "FIM DE JOGO";
+    video_text(240, 100, mensagem_estado);
   }
 
   video_show();
-  video_close();
+  video_clear();
 }
 
 //Funcao que desenha uma matriz 10x24
 //Versao de teste (print)
-/*int desenha_matriz(int t[10][24]){
+/*void desenha_matriz(int t[10][24]){
   int cont0;
   int cont1;
 
@@ -219,25 +191,21 @@ void desenha_estado(int estado_jogo, int linha_limite) {
   }
 
   printf("\n\n");
-  
-  return 0;
 }*/
 
 //Funcao que exibe a pontuacao do jogador na tela
 //Versao de teste (print)
-/*int desenha_pontos(int pontos){
+/*void desenha_pontos(int pontos){
   int cont0;
   int cont1;
 
   printf("\n");
   printf("PONTUACAO: %d", pontos);
-
-  return 0;
 }*/
 
 //Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo"
 //Versao de teste (print)
-/*int desenha_estado(int estado_jogo, int linha_limite) {
+/*void desenha_estado(int estado_jogo, int linha_limite) {
 
   if(estado_jogo == 0) {
     //printf("\n");
@@ -252,6 +220,18 @@ void desenha_estado(int estado_jogo, int linha_limite) {
     printf("FIM DA PARTIDA. INICIE UMA NOVA PARTIDA PARA CONTINUAR JOGANDO.");
   }
 }*/
+
+//Funcao que consolida as funcoes de atualizacao da tela
+void atualiza_tela(int estatico[10][24], int peca[4][4], int posx, int posy, int pontos, int estado_jogo, int linha_limite) {
+  
+  int tela[10][24];
+
+  une_matriz(&tela, estatico, peca, posx, posy);
+
+  desenha_matriz(tela);
+  desenha_pontos(pontos);
+  desenha_estado(estado_jogo, linha_limite);
+}
 
 
 //Funcao que verifica a possibilidade de mover uma pecao de posicao
@@ -440,14 +420,15 @@ int ler_reset() {
 
 int main ( void ) {
   
-  //Matriz de exibicao, objetos estaticos e peca em movimento, respectivamente
-  int tela[10][24];
+  //Matriz de objetos estaticos e peca em movimento, respectivamente
   int estatico[10][24];
   int peca[4][4];
   int Rst;
 
   //Linha limite (minima de cima para baixo) para colocacao das pecas
   int linha_limite = 7;
+
+  video_open();
 
   //Loop externo que serve para reiniciar o game caso o interno seja quebrado
   while(1 == 1) {
@@ -500,10 +481,7 @@ int main ( void ) {
     printf("Botao: %d", Rst);
 
     //Display inicial da tela
-    une_matriz(&tela, estatico, peca, posx, posy);
-    desenha_matriz(tela);
-    desenha_pontos(contador_pontos);
-    desenha_estado(estado_jogo, linha_limite);
+    atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
 
     //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundos)
     struct timespec intervalo;
@@ -526,13 +504,12 @@ int main ( void ) {
       estado_jogo = ler_comando();
       printf("%d", estado_jogo);
 
-      //Exibe o estado caso requisitado apos outras exibicoes
+      //Atualiza a tela caso o estado do jogo tenha mudado de rodando para pausa / game over
       if((quer_exibir_estado == 1) && (estado_jogo != 0)) {
-        desenha_estado(estado_jogo, linha_limite);
-        quer_exibir_estado = 0;
+        atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
       }
 
-      //Acoes executadas a cada ciclo do clock
+      //Acoes executadas a cada ciclo do clock, caso o jogo esteja em andamento
       if(((cont % 1) == 0) && (estado_jogo == 0)) {
 
         quer_exibir_estado = 1;
@@ -564,10 +541,7 @@ int main ( void ) {
             mover(estatico, peca, &posx, &posy, direcao_movimento, 0);
 
             //Desenha os novos elementos na tela
-            une_matriz(&tela, estatico, peca, posx, posy);
-            desenha_matriz(tela);
-            desenha_pontos(contador_pontos);
-            desenha_estado(estado_jogo, linha_limite);
+            atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
           }
         }
         //Caso contrario, aumenta o contador do "cooldown"
@@ -576,7 +550,7 @@ int main ( void ) {
         }
       }
       
-      //Acoes executadas a cada 50 ciclos do clock
+      //Acoes executadas a cada 50 ciclos do clock, caso o jogo esteja em andamento
       if(((cont % 50) == 0) && (estado_jogo == 0)) {
 
         quer_exibir_estado = 1;
@@ -636,10 +610,7 @@ int main ( void ) {
         }
 
         //Desenha os novos elementos na tela
-        une_matriz(&tela, estatico, peca, posx, posy);
-        desenha_matriz(tela);
-        desenha_pontos(contador_pontos);
-        desenha_estado(estado_jogo, linha_limite);
+        atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
       }
 
       //Artificio para "prender" a execucao do programa quando o estado acabar sendo 3 (so permite sair caso seja mudado para estado 2)
