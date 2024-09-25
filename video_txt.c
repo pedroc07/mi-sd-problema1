@@ -13,6 +13,8 @@ int main(){
     video_text (char_x-strlen(msg_buffer), char_y - 1, msg_buffer);
     video_show ();
     video_close ();
+    printf("X: %d\n", char_x);
+    printf("Y: %d\n", char_y);
     printf ("\nExiting sample program\n");
     return 0;
 }

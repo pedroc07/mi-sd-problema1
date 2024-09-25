@@ -40,6 +40,7 @@
 #define XL345_INACTIVITY           0x08
 #define XL345_ACTIVITY             0x10
 #define XL345_RATE_100             0x0a
+#define XL345_DATAREADY            0x80
 
 
 volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt, *I2C0USEFPGA, *GENERALIO7, *GENERALIO8;
@@ -198,7 +199,7 @@ int ADXL345_IsDataReady(){
 
     ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
 
-    if (data8 & XL345_ACTIVITY){
+    if (data8 & XL345_DATAREADY){
         bReady = 1;
     }
     return bReady;
@@ -296,7 +297,7 @@ void ADXL345_Calibrate(){
 }
 
 
-int main(void) {
+void* Accel(int * X) {
     int fd = -1;
     int fd1 = -1;
     void *LW_virtual;
@@ -320,16 +321,6 @@ int main(void) {
    I2C0_fs_hcnt = (int *) (LW_virtual + 0x1C);
    I2C0_fs_lcnt = (int *) (LW_virtual + 0x20);
 
-   //Mapeamento do multiplexador
-   /*
-    I2C0USEFPGA = (int *) (SYSMGR_virtual + SYSMGR_I2C0USEFPGA);
-    GENERALIO7 = (int *) (SYSMGR_virtual + SYSMGR_GENERALIO7);
-    GENERALIO8 = (int *) (SYSMGR_virtual + SYSMGR_GENERALIO8);
-   */
-
-    //Configurações iniciais
-    //Pinmux_config();
-
     I2C0_init();
 
     uint8_t value;
@@ -342,14 +333,11 @@ int main(void) {
 
         ADXL345_Calibrate();
 
-        int x = 0;
-
-        while(x < 10){
+        while(1){
         if(ADXL345_IsDataReady()){
             ADXL345_XYZ_Read(XYZ);
-            printf("X=%d, Y=%d, Z=%d\n", XYZ[0], XYZ[1], XYZ[2]);
+            *X = XYZ[0];
             usleep(1000000);
-            x++;
             }
         }
 
@@ -359,5 +347,5 @@ int main(void) {
     unmap_physical(LW_virtual, I2C0_SPAN);
     close_physical(fd);
 
-    return 0;
+    return NULL;
 }

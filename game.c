@@ -3,6 +3,8 @@
 # include <unistd.h>
 # include <time.h>
 # include <sys/time.h>
+#include "map.c"
+#include <pthread.h>
 
 # include <intelfpgaup/video.h>
 #include <intelfpgaup/SW.h>
@@ -63,6 +65,11 @@ void desenha_matriz(int t[10][24]){
   video_open();
   video_clear();
 
+  char mensagem_limpar[32] = "                                ";
+  video_text(30, 30, mensagem_limpar);
+  video_text(28, 0, mensagem_limpar);
+  video_text(28, 1, mensagem_limpar);
+
   for(cont0 = 0; cont0 < 10; cont0++) {
     
     for(cont1 = 0; cont1 < 24; cont1++){
@@ -72,7 +79,7 @@ void desenha_matriz(int t[10][24]){
       posy2 = ((cont1 + 1) * 10) - 1;
       
       if (t[cont0][cont1] == 0) {
-        video_box(posx1, posy1, posx2, posy2, video_WHITE);
+        video_box(posx1, posy1, posx2, posy2, video_GREY);
       }
       else if(t[cont0][cont1] == 1) {
         video_box(posx1, posy1, posx2, posy2, video_RED);
@@ -110,28 +117,28 @@ void desenha_pontos(int pontos){
   char int_array[32];
   sprintf(int_array, "%d", pontos);
 
-  char mensagem_pontos[32] = "PONTOS:";
+  char mensagem_pontos[7] = "PONTOS:";
 
-  video_text(240, 200, mensagem_pontos);
-  video_text(240, 215, int_array);
+  video_text(28, 0, mensagem_pontos);
+  video_text(28, 1, int_array);
 }
 
 //Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo" em tela 320x240
 void desenha_estado(int estado_jogo, int linha_limite) {
 
   //Desenha a linha limite da area de jogo
-  video_box((110), (linha_limite * 10), (209), (((linha_limite + 1) * 10) - 1), video_GREY);
+  video_box((110), (linha_limite * 10), (209), (((linha_limite + 1) * 10) - 1), video_WHITE);
 
   //Exibe as mensagens de estado de jogo para "pausa" e "fim de jogo"
   if(estado_jogo == 1) {
 
     char mensagem_estado[12] = "JOGO PAUSADO";
-    video_text(240, 200, mensagem_estado);
+    video_text(34, 30, mensagem_estado);
   }
   else if(estado_jogo == 3) {
     
     char mensagem_estado[11] = "FIM DE JOGO";
-    video_text(240, 100, mensagem_estado);
+    video_text(35, 30, mensagem_estado);
   }
 
   video_show();
@@ -363,11 +370,41 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
   return 0;
 }
 
+//Funcao que interpreta o movimento
+//A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
+int ler_movimento(int aceleracaoX) {
+
+  int direcao = 0;
+  
+  if(((aceleracaoX >= 0) && (aceleracaoX < 90)) || ((aceleracaoX < 0) && (aceleracaoX > (-90)))) {
+    direcao = 0;
+  }
+  else if((aceleracaoX >= 90) && (aceleracaoX < 175)) {
+    direcao = 50;
+  }
+  else if((aceleracaoX <= (-90)) && (aceleracaoX > (-175))) {
+    direcao = -50;
+  }
+  else if((aceleracaoX >= 175) && (aceleracaoX < 225)) {
+    direcao = 35;
+  }
+  else if((aceleracaoX <= (-175)) && (aceleracaoX > (-225))) {
+    direcao = -35;
+  }
+  else if((aceleracaoX >= 225) && (aceleracaoX < 250)) {
+    direcao = 20;
+  }
+  else if((aceleracaoX <= (-225)) && (aceleracaoX > (-250))) {
+    direcao = -20;
+  }
+
+  return direcao;
+}
 
 //Funcao que interpreta o movimento
 //A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
 //Versao de teste (pre-programada)
-int ler_movimento(int contador_loop) {
+/*int ler_movimento(int contador_loop) {
   int direcao = 0;
   
   if(contador_loop == 10) {
@@ -393,7 +430,7 @@ int ler_movimento(int contador_loop) {
   }
 
   return direcao;
-}
+}*/
 
 //Funcao que le a entrada atual de chaves para controle do game
 int ler_comando() {
@@ -419,7 +456,12 @@ int ler_reset() {
 
 
 int main ( void ) {
+  int aceleracaoX;
   
+  pthread_t acel_id;
+  printf("inicia thread...");
+  pthread_create(&acel_id, NULL, Accel, &aceleracaoX);
+
   //Matriz de objetos estaticos e peca em movimento, respectivamente
   int estatico[10][24];
   int peca[4][4];
@@ -515,7 +557,7 @@ int main ( void ) {
         quer_exibir_estado = 1;
 
         //Obtem o vetor movimento
-        int valor_movimento = ler_movimento(cont);
+        int valor_movimento = ler_movimento(acelaracaoX);
 
         //Espera maxima e direcao do movimento
         int espera_maxima;
@@ -525,7 +567,7 @@ int main ( void ) {
         if (valor_movimento != 0) {
           espera_maxima = (abs(valor_movimento));
           direcao_movimento = (valor_movimento/espera_maxima);
-        }
+        }aceleracaoX
         //Caso retorne zero, isso quer dizer que nao houve movimento algum
         else {
           espera_maxima = 10;
@@ -565,7 +607,6 @@ int main ( void ) {
           
           //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
           une_matriz(&estatico, estatico, peca, posx, posy);
-
           //A peca atual deixa de existir
           preenche_zero_4_x_4(&peca);
           
