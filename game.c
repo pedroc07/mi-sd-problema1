@@ -113,155 +113,37 @@ int desenha_matriz(int t[10][24]){
   return 0;
 }
 
-//Funcao que exibe os segmentos referentes ao que seria um display de 7 segmentos para cada caractere em tela 320x240
-void exibe_segmentos(int sega, int segb, int segc, int segd, int sege, int segf, int segg, int x, int y) {
-  
-  while (*texto) {
-    
-    if(sega == 1) {
-      video_box(x, y, (x + 4), y, video_WHITE);
-    }
-    if(segb == 1) {
-      video_box((x + 4), y, (x + 4), (y + 4), video_WHITE);
-    }
-    if(segc == 1) {
-      video_box((x + 4), (y + 5), (x + 4), (y + 9), video_WHITE);
-    }
-    if(segd == 1) {
-      video_box(x, (y + 9), (x + 4), (y + 9), video_WHITE);
-    }
-    if(sege == 1) {
-      video_box(x, (y + 5), x, (y + 9), video_WHITE);
-    }
-    if(segf == 1) {
-      video_box(x, y, x, (y + 4), video_WHITE);
-    }
-    if(segg == 1) {
-      video_box(x, (y + 4), (x + 4), (y + 4), video_WHITE);
-    }
-  }
-}
-
 //Funcao que escreve texto em tela 320x240
-void escrever_texto(int x, int y, char *texto) {
+void escrever_texto(int x, int y, char texto[32]) {
   
-  while (*texto) {
-    
-    if(*texto == "P") {
-      exibe_segmentos(1, 1, 0, 0, 1, 1, 1, x, y);
-    }
-    else if(*texto == "A") {
-      exibe_segmentos(1, 1, 1, 0, 1, 1, 1, x, y);
-    }
-    else if(*texto == "U") {
-      exibe_segmentos(0, 1, 1, 1, 1, 1, 0, x, y);
-    }
-    else if(*texto == "S") {
-      exibe_segmentos(1, 0, 1, 1, 0, 1, 1, x, y);
-    }
-    else if(*texto == "F") {
-      exibe_segmentos(1, 0, 0, 0, 1, 1, 1, x, y);
-    }
-    else if(*texto == "I") {
-      exibe_segmentos(0, 0, 0, 0, 1, 1, 0, x, y);
-    }
-    else if(*texto == "M") {
-      exibe_segmentos(0, 1, 1, 0, 1, 1, 0, x, y);
-      video_box((x + 1), (y + 1), (x + 1), (y + 1), video_WHITE);
-      video_box((x + 2), (y + 2), (x + 2), (y + 2), video_WHITE);
-      video_box((x + 3), (y + 1), (x + 3), (y + 1), video_WHITE);
-    }
-    else if(*texto == "D") {
-      exibe_segmentos(0, 0, 0, 0, 1, 1, 0, x, y);
-      video_box((x + 1), y, (x + 2), y, video_WHITE);
-      video_box((x + 3), (y + 2), (x + 3), (y + 2), video_WHITE);
-      video_box((x + 4), (y + 3), (x + 4), (y + 7), video_WHITE);
-      video_box((x + 3), (y + 8), (x + 3), (y + 8), video_WHITE);
-      video_box((x + 1), (y + 9), (x + 2), (y + 9), video_WHITE);
-    }
-    else if(*texto == "E") {
-      exibe_segmentos(1, 0, 0, 1, 1, 1, 1, x, y);
-    }
-    else if(*texto == "J") {
-      exibe_segmentos(1, 1, 1, 1, 1, 0, 0, x, y);
-    }
-    else if(*texto == "O") {
-      exibe_segmentos(1, 1, 1, 1, 1, 1, 0, x, y);
-    }
-    else if(*texto == "G") {
-      exibe_segmentos(1, 0, 1, 1, 1, 1, 0, x, y);
-      video_box((x + 3), (y + 4), (x + 4), (y + 4), video_WHITE);
-    }
-    else if(*texto == "N") {
-      exibe_segmentos(0, 1, 1, 0, 1, 1, 0, x, y);
-      video_box((x + 1), (y + 1), (x + 1), (y + 1), video_WHITE);
-      video_box((x + 2), (y + 2), (x + 2), (y + 7), video_WHITE);
-      video_box((x + 3), (y + 8), (x + 3), (y + 8), video_WHITE);
-    }
-    else if(*texto == "T") {
-      exibe_segmentos(1, 0, 0, 0, 0, 0, 0, x, y);
-      video_box((x + 2), (y + 1), (x + 2), (y + 9), video_WHITE);
-    }
-    else if(*texto == ":") {
-      video_box((x + 4), (y + 1), (x + 4), (y + 2), video_WHITE);
-      video_box((x + 4), (y + 7), (x + 4), (y + 8), video_WHITE);
-    }
-    else if(*texto == "0") {
-      exibe_segmentos(1, 1, 1, 1, 1, 1, 0, x, y);
-    }
-    else if(*texto == "1") {
-      exibe_segmentos(0, 1, 1, 0, 0, 0, 0, x, y);
-    }
-    else if(*texto == "2") {
-      exibe_segmentos(1, 1, 0, 1, 1, 0, 1, x, y);
-    }
-    else if(*texto == "3") {
-      exibe_segmentos(1, 1, 1, 1, 0, 0, 1, x, y);
-    }
-    else if(*texto == "4") {
-      exibe_segmentos(0, 1, 1, 0, 0, 1, 1, x, y);
-    }
-    else if(*texto == "5") {
-      exibe_segmentos(1, 0, 1, 1, 0, 1, 1, x, y);
-    }
-    else if(*texto == "6") {
-      exibe_segmentos(1, 0, 1, 1, 1, 1, 1, x, y);
-    }
-    else if(*texto == "7") {
-      exibe_segmentos(1, 1, 1, 0, 0, 0, 0, x, y);
-    }
-    else if(*texto == "8") {
-      exibe_segmentos(1, 1, 1, 1, 1, 1, 1, x, y);
-    }
-    else if(*texto == "9") {
-      exibe_segmentos(1, 1, 1, 1, 0, 1, 1, x, y);
-    }
-    
-    x += 6;
-    texto++;
-  }
+  video_open();
+  
+  video_text(x, y, texto);
+  
+  video_show();
+  video_close();
 }
 
 //Funcao que exibe a pontuacao do jogador em uma tela 320x240, ao lado da matriz do jogo exibida na funcao anterior
-int desenha_pontos(int pontos){
+void desenha_pontos(int pontos){
   
-  //Converte int em array de caracteres de ate 14 caracteres (o que cabe na tela apartir da posicao inicial)
-  char int_array[14];
+  //Converte int em array de caracteres de ate 32 caracteres (o que cabe na tela apartir da posicao inicial)
+  char int_array[32];
   sprintf(int_array, "%d", pontos);
 
-  char mensagem_pontos[7] = "PONTOS:";
+  char mensagem_pontos[32] = "PONTOS:";
 
   video_open();
 
-  escrever_texto(240, 200, &mensagem_pontos);
-  escrever_texto(240, 215, &pontos);
+  escrever_texto(240, 200, mensagem_pontos);
+  escrever_texto(240, 215, int_array);
 
   video_show();
   video_close();
 }
 
 //Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo" em tela 320x240
-int desenha_estado(int estado_jogo, int linha_limite) {
+void desenha_estado(int estado_jogo, int linha_limite) {
 
   video_open();
 
@@ -271,13 +153,13 @@ int desenha_estado(int estado_jogo, int linha_limite) {
   //Exibe as mensagens de estado de jogo para "pausa" e "fim de jogo"
   if(estado_jogo == 1) {
 
-    char mensagem_estado[12] = "JOGO PAUSADO";
-    escrever_texto(240, 200, &mensagem_estado);
+    char mensagem_estado[32] = "JOGO PAUSADO";
+    escrever_texto(240, 200, mensagem_estado);
   }
   else if(estado_jogo == 3) {
     
-    char mensagem_estado[11] = "FIM DE JOGO";
-    escrever_texto(240, 100, &mensagem_estado);
+    char mensagem_estado[32] = "FIM DE JOGO";
+    escrever_texto(240, 100, mensagem_estado);
   }
 
   video_show();
