@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
-#include <stdbool.h>
 #include "address_map_arm.h"
 
 // ADXL345 Register List
@@ -40,10 +39,9 @@
 #define XL345_INACTIVITY           0x08
 #define XL345_ACTIVITY             0x10
 #define XL345_RATE_100             0x0a
-#define XL345_DATAREADY            0x80
 
 
-volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt, *I2C0USEFPGA, *GENERALIO7, *GENERALIO8;
+volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt;
 
 // Funções para acessar memória física
 int open_physical(int fd) {
@@ -78,12 +76,6 @@ int unmap_physical(void *virtual_base, unsigned int span) {
     return 0;
 }
 
-void Pinmux_config(){
-    *I2C0USEFPGA = 0;
-    *GENERALIO7 = 1;
-    *GENERALIO8 = 1;
-
-}
 
 void I2C0_init(){
     //Para qualquer transmissão no I2C0
@@ -181,13 +173,13 @@ void ADXL345_XYZ_Read(int16_t szData16[3]){
 }
 
 
-bool ADXL345_WasActivityUpdated(){
-    bool bReady = false;
+int ADXL345_WasActivityUpdated(){
+    int bReady = 0;
     uint8_t data8;
 
     ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
     if (data8 & XL345_ACTIVITY)
-        bReady = true;
+        bReady = 1;
 
     return bReady;
 }
@@ -199,7 +191,7 @@ int ADXL345_IsDataReady(){
 
     ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
 
-    if (data8 & XL345_DATAREADY){
+    if (data8 & XL345_ACTIVITY){
         bReady = 1;
     }
     return bReady;
@@ -294,58 +286,4 @@ void ADXL345_Calibrate(){
 
     printf("\nFinalizando a calibragem do ADXL345\n");
     printf("================================================\n");
-}
-
-
-void* Accel(int * X) {
-    int fd = -1;
-    int fd1 = -1;
-    void *LW_virtual;
-    int16_t XYZ[3];
-
-    // Abrir /dev/mem e mapear a área de memória do I2C e do SYSMGR
-    if ((fd = open_physical(fd)) == -1)
-        return (-1);
-    if (!(LW_virtual = map_physical(fd, I2C0_BASE, I2C0_SPAN)))
-        return (-1);
-    close_physical(fd);
-
-
-   //Mapeamento de memória do I2C0
-   I2C0_con = (int *) (LW_virtual + I2C0_CON);
-   I2C0_tar = (int *) (LW_virtual + 0x4);
-   I2C0_data = (int *) (LW_virtual + 0x10);
-   I2C0_readbuffer = (int *) (LW_virtual + 0x78);
-   I2C0_enable = (int *) (LW_virtual + 0x6C);
-   I2C0_enable_sts = (int *) (LW_virtual + 0x9C);
-   I2C0_fs_hcnt = (int *) (LW_virtual + 0x1C);
-   I2C0_fs_lcnt = (int *) (LW_virtual + 0x20);
-
-    I2C0_init();
-
-    uint8_t value;
-    ADXL345_read(ADXL345_REG_DEVID, &value);
-    
-    if(value == 0xE5){
-        printf("ID: %x\n", value);
-        
-        ADXL_345_init();
-
-        ADXL345_Calibrate();
-
-        while(1){
-        if(ADXL345_IsDataReady()){
-            ADXL345_XYZ_Read(XYZ);
-            *X = XYZ[0];
-            usleep(1000000);
-            }
-        }
-
-    }
-
-    // Desvincular e fechar
-    unmap_physical(LW_virtual, I2C0_SPAN);
-    close_physical(fd);
-
-    return NULL;
 }

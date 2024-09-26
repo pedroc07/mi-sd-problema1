@@ -10,6 +10,33 @@
 #include <intelfpgaup/SW.h>
 #include <intelfpgaup/KEY.h>
 
+int16_t X_inicial = 0;
+int16_t aceleracaoX = 0;
+int16_t aceleracaoY = 0;
+int16_t aceleracaoZ = 0;
+
+// Função para ler o acelerômetro em uma thread
+void* ler_acelerometro(void* arg) {
+    int16_t XYZ[3];
+
+    int cont = 0;
+    
+    while (1) {
+      ADXL345_XYZ_Read(XYZ);
+      aceleracaoX = XYZ[0];
+      aceleracaoY = XYZ[1];
+      aceleracaoZ = XYZ[2];
+      usleep(100000);
+
+      if(cont<9) {
+        X_inicial = aceleracaoX;
+        cont++;
+      } 
+    }
+    return NULL;
+}
+
+
 //Funcao que preenche com 0 todas as celulas de uma matriz 10x24
 void preenche_zero_10_x_24(int (*tela)[10][24]) {
   int cont0;
@@ -62,7 +89,6 @@ void desenha_matriz(int t[10][24]){
   int posx1, posx2;
   int posy1, posy2;
 
-  video_open();
   video_clear();
 
   char mensagem_limpar[32] = "                                ";
@@ -115,7 +141,7 @@ void desenha_pontos(int pontos){
   
   //Converte int em array de caracteres de ate 32 caracteres (o que cabe na tela apartir da posicao inicial)
   char int_array[32];
-  sprintf(int_array, "%d", pontos);
+  sprintf(int_array, "%d", pontos*100);
 
   char mensagem_pontos[7] = "PONTOS:";
 
@@ -333,37 +359,30 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
   if(forma == 0) {
     (*peca)[0][0] = cor;
     (*peca)[0][1] = cor;
-    (*peca)[0][2] = cor;
     (*peca)[1][0] = cor;
+    (*peca)[1][1] = cor;
   }
   else if(forma == 1) {
     (*peca)[0][0] = cor;
-    (*peca)[1][1] = cor;
-    (*peca)[1][2] = cor;
-    (*peca)[1][0] = cor;
   }
   else if(forma == 2) {
     (*peca)[0][0] = cor;
     (*peca)[0][1] = cor;
     (*peca)[0][2] = cor;
-    (*peca)[0][3] = cor;
   }
   else if(forma == 3) {
     (*peca)[0][0] = cor;
     (*peca)[1][0] = cor;
     (*peca)[2][0] = cor;
-    (*peca)[3][0] = cor;
   }
   else if(forma == 4) {
+    (*peca)[0][0] = cor;
     (*peca)[0][1] = cor;
     (*peca)[1][1] = cor;
-    (*peca)[2][1] = cor;
-    (*peca)[1][0] = cor;
   }
   else if(forma == 5) {
-    (*peca)[0][0] = cor;
     (*peca)[1][0] = cor;
-    (*peca)[2][0] = cor;
+    (*peca)[0][1] = cor;
     (*peca)[1][1] = cor;
   }
  
@@ -372,29 +391,31 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
 
 //Funcao que interpreta o movimento
 //A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
-int ler_movimento(int aceleracaoX) {
+int ler_movimento() {
 
   int direcao = 0;
+
+  printf("X_INICIAL = %d, ", X_inicial);
+  printf("X = %d, ", aceleracaoX);
+  printf("Y = %d, ", aceleracaoY);
+  printf("Z = %d\n", aceleracaoZ);
   
-  if(((aceleracaoX >= 0) && (aceleracaoX < 90)) || ((aceleracaoX < 0) && (aceleracaoX > (-90)))) {
-    direcao = 0;
-  }
-  else if((aceleracaoX >= 90) && (aceleracaoX < 175)) {
+  if((aceleracaoX >= (X_inicial + 30)) && (aceleracaoX < (X_inicial + 50))) {
     direcao = 50;
   }
-  else if((aceleracaoX <= (-90)) && (aceleracaoX > (-175))) {
+  else if((aceleracaoX <= (X_inicial - 30)) && (aceleracaoX > (X_inicial - 50))) {
     direcao = -50;
   }
-  else if((aceleracaoX >= 175) && (aceleracaoX < 225)) {
+  else if((aceleracaoX >= (X_inicial + 50)) && (aceleracaoX < (X_inicial + 70))) {
     direcao = 35;
   }
-  else if((aceleracaoX <= (-175)) && (aceleracaoX > (-225))) {
+  else if((aceleracaoX <= (X_inicial - 50)) && (aceleracaoX > (X_inicial - 70))) {
     direcao = -35;
   }
-  else if((aceleracaoX >= 225) && (aceleracaoX < 250)) {
+  else if((aceleracaoX >= (X_inicial + 70)) && (aceleracaoX < (X_inicial + 90))) {
     direcao = 20;
   }
-  else if((aceleracaoX <= (-225)) && (aceleracaoX > (-250))) {
+  else if((aceleracaoX <= (X_inicial - 70)) && (aceleracaoX > (X_inicial - 90))) {
     direcao = -20;
   }
 
@@ -435,10 +456,25 @@ int ler_movimento(int aceleracaoX) {
 //Funcao que le a entrada atual de chaves para controle do game
 int ler_comando() {
   int estado;
+  int switch_value;
 
   SW_open();
-  SW_read(&estado);
+  SW_read(&switch_value);
   SW_close();
+
+  //Estado pausado
+  if (switch_value == 1) {
+    estado = 1;
+  }//Estado despausadado
+  else if (switch_value == 0) {
+    estado = 0;
+  } //Estado de reset
+  else if ((switch_value == 2) || (switch_value == 3)) {
+    estado = 2;
+    video_clear();
+    video_erase();
+  }
+  //Estado inicial = 3
 
   return estado;
 }
@@ -454,13 +490,56 @@ int ler_reset() {
   return estado;
 }
 
+//Desenha a tela inicial do jogo
+int tela_inicial(){
+  
+  video_box(110, 0, 210, 239, video_GREY);
+
+  char nome_jogo[12] = "TETRIS 2024";
+  video_text(35, 30, nome_jogo);
+
+  video_show();
+  video_clear();
+
+}
+
 
 int main ( void ) {
-  int aceleracaoX;
-  
-  pthread_t acel_id;
-  printf("inicia thread...");
-  pthread_create(&acel_id, NULL, Accel, &aceleracaoX);
+    int fd = -1;
+    int fd1 = -1;
+    void *I2C0_virtual;
+    int16_t XYZ[3];
+
+    // Abrir /dev/mem e mapear a área de memória do I2C e do SYSMGR
+    if ((fd = open_physical(fd)) == -1)
+        return (-1);
+    if (!(I2C0_virtual = map_physical(fd, I2C0_BASE, I2C0_SPAN)))
+        return (-1);
+    close_physical(fd);
+
+
+   //Mapeamento de memória do I2C0
+   I2C0_con = (int *) (I2C0_virtual + I2C0_CON);
+   I2C0_tar = (int *) (I2C0_virtual + 0x4);
+   I2C0_data = (int *) (I2C0_virtual + 0x10);
+   I2C0_readbuffer = (int *) (I2C0_virtual + 0x78);
+   I2C0_enable = (int *) (I2C0_virtual + 0x6C);
+   I2C0_enable_sts = (int *) (I2C0_virtual + 0x9C);
+   I2C0_fs_hcnt = (int *) (I2C0_virtual + 0x1C);
+   I2C0_fs_lcnt = (int *) (I2C0_virtual + 0x20);
+
+  I2C0_init();
+
+  ADXL_345_init();
+    
+  ADXL345_Calibrate();
+
+  pthread_t thread_acelerometro;
+
+    if (pthread_create(&thread_acelerometro, NULL, ler_acelerometro, NULL) != 0) {
+            fprintf(stderr, "Erro ao criar a thread do acelerômetro\n");
+            return 1;
+    }
 
   //Matriz de objetos estaticos e peca em movimento, respectivamente
   int estatico[10][24];
@@ -471,7 +550,7 @@ int main ( void ) {
   int linha_limite = 7;
 
   video_open();
-
+  video_erase();
   //Loop externo que serve para reiniciar o game caso o interno seja quebrado
   while(1 == 1) {
     
@@ -480,13 +559,13 @@ int main ( void ) {
     preenche_zero_4_x_4(&peca);
 
     //Preenche certos espacos da matriz estatica para fins de teste
-    estatico[0][23] = 3;
-    estatico[1][23] = 7;
-    estatico[2][23] = 5;
-    estatico[3][23] = 1;
-    estatico[4][23] = 2;
-    estatico[8][23] = 4;
-    estatico[9][23] = 6;
+    //estatico[0][23] = 3;
+    //estatico[1][23] = 7;
+    //estatico[2][23] = 5;
+    //estatico[3][23] = 1;
+    //estatico[4][23] = 2;
+    //estatico[8][23] = 4;
+    //estatico[9][23] = 6;
 
     //Contador de ciclos do game, usado para testes
     int cont = 0;
@@ -515,16 +594,19 @@ int main ( void ) {
     //Contador de pontos
     int contador_pontos = 0;
 
-    //Obtem o estado do jogo
-    int estado_jogo = ler_comando();
+    //Estado inicial do jogo
+    int estado_jogo = 3;
 
     //Lê o botão de reset
     Rst = ler_reset();
     printf("Botao: %d", Rst);
 
     //Display inicial da tela
-    atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
-
+    //atualiza_tela(estatico, peca, posx, posy, contador_pontos, estado_jogo, linha_limite);
+    tela_inicial();
+    while (estado_jogo != 1){
+      estado_jogo = ler_comando();
+    }
     //Estrutura do intervalo de tempo para o sleep da aplicacao (periodo de 10,000,000 nanossegundos ou 10 milissegundos)
     struct timespec intervalo;
     intervalo.tv_sec = 0;
@@ -557,7 +639,7 @@ int main ( void ) {
         quer_exibir_estado = 1;
 
         //Obtem o vetor movimento
-        int valor_movimento = ler_movimento(acelaracaoX);
+        int valor_movimento = ler_movimento();
 
         //Espera maxima e direcao do movimento
         int espera_maxima;
@@ -567,7 +649,7 @@ int main ( void ) {
         if (valor_movimento != 0) {
           espera_maxima = (abs(valor_movimento));
           direcao_movimento = (valor_movimento/espera_maxima);
-        }aceleracaoX
+        }
         //Caso retorne zero, isso quer dizer que nao houve movimento algum
         else {
           espera_maxima = 10;
@@ -657,18 +739,17 @@ int main ( void ) {
       //Artificio para "prender" a execucao do programa quando o estado acabar sendo 3 (so permite sair caso seja mudado para estado 2)
       //Estado 3 significa "fim de jogo", sendo por isso que so permite ser mudado para "restart"
       if (estado_jogo == 3) {
-        /*while(Rst != 14){
-            Rst = ler_reset();
-          }
-          estado_jogo = ler_comando();
-        */
         while(estado_jogo != 2) {
           estado_jogo = ler_comando();
         }
       }
 
-      //Sobe o contador de ciclos utilizado para testes
+      //Sobe o contador de ciclos
       cont = (cont + 1);
+
+      if (cont == 2001) {
+        cont = 1;
+      }
     }
 
     //Artificio para "prender" a execucao do programa ate que o input de restart seja "solto"
@@ -676,4 +757,8 @@ int main ( void ) {
       estado_jogo = ler_comando();
     }
   }
+
+  video_close();
+  unmap_physical(I2C0_virtual, I2C0_SPAN);
+  close_physical(fd);
 }
