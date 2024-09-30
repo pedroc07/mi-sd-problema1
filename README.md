@@ -30,8 +30,6 @@ Cria o executável.
 
 Executa o jogo.
 
-![diagrama_sd](https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d)
-
 ## Lógica do jogo
 
 Para criar a tela do jogo, foi feito o uso de uma matriz de inteiros (tipo int) 10x24 onde os elementos representam as células do jogo. Para gerar as peças utilizadas são geradas matrizes de inteiros (tipo int) 4x4. Nessas matrizes o número 0 representa os espaços vazios e os demais números são referentes ao índice da cor dos blocos. As matrizes são unidas, por meio do preenchimento de uma segunda matriz 10x24, imediatamente antes da exibição da tela.
@@ -42,7 +40,7 @@ A seguir, em se tratando do movimento vertical, sua impossibilidade resulta na c
 
 O controle do fluxo de jogo é feito por meio da combinação dos resultados da leitura de certos dispositivos de entrada da placa DE1-SoC (chaves SW0 e SW1) e do próprio código do programa. Em execução, o jogo pode realizar ações de movimento e atualização da tela, como dito anteriormente; Em pausa e quando finalizada a sessão de jogo, movimentos e atualizações de tela não podem ocorrer, mas o usuário pode reiniciar o jogo inteiro em ambas as ocasiões e retomar a sessão atual apenas em caso de pausa.
 
-
+![diagrama_sd](https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d)
 
 ## Uso do acelerômetro
 
