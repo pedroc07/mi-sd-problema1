@@ -30,7 +30,7 @@ Cria o executável.
 
 Executa o jogo.
 
-
+![diagrama_sd](https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d)
 
 ## Lógica do jogo
 
@@ -41,6 +41,8 @@ A movimentação da peça atual - isto é, a atualização de suas posições x 
 A seguir, em se tratando do movimento vertical, sua impossibilidade resulta na colocação dos blocos da peça na matriz "estática" do jogo. Ademais, quando isto ocorre, avalia-se a posição y final da peça que acabou de ser colocada: Caso dentro da área permitida (aquela delimitada pela área abaixo da linha horizontal de cor branca), o jogo continua por meio do "sorteio" de um formato e cor para uma nova peça; Caso fora desta área, o jogo é marcado como "finalizado".
 
 O controle do fluxo de jogo é feito por meio da combinação dos resultados da leitura de certos dispositivos de entrada da placa DE1-SoC (chaves SW0 e SW1) e do próprio código do programa. Em execução, o jogo pode realizar ações de movimento e atualização da tela, como dito anteriormente; Em pausa e quando finalizada a sessão de jogo, movimentos e atualizações de tela não podem ocorrer, mas o usuário pode reiniciar o jogo inteiro em ambas as ocasiões e retomar a sessão atual apenas em caso de pausa.
+
+
 
 ## Uso do acelerômetro
 
