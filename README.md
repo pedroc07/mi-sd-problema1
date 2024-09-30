@@ -26,7 +26,7 @@ Para executar o programa, utilize o arquivo makefile também disponível; Em um 
 
 - sudo ./game
 
-###### (Executa o jogo. Vale lembrar que o sufixo "sudo" executa o programa em "root" do Linux, e portanto seu uso faz-se desnecessario se o sistema no qual o programa é executado já está permitindo acesso aos recursos privilegiados necessários; Ademais, por ser um recurso do Linux, outros sistemas operacionais que porventura permitam a compilação do programa podem não reconhecer tal comando.)
+###### (Executa o jogo.)
 
 ## Lógica do jogo
 
@@ -151,3 +151,25 @@ Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerôme
 
 Nesse projeto é possível não somente demonstrar a comunicação eficaz com o ADXL345, mas também oferece uma visão prática sobre como trabalhar com dispositivos I2C e mapeamento de memória em sistemas embarcados.
 -->
+
+## Desenvolvimento do projeto
+
+A fase inicial do projeto foi constituída de considerações acerca da lógica básica do jogo e sobre a modularidade mínima necessária em todo o projeto. Foi decidido que o jogo utilizaria as bibliotecas permitidas para uma implementação rápida, ou seja, todas menos as referentes ao acelerômetro ADXL345, o que resultou na divisão do projeto entre o desenvolvimento do jogo e o desenvolvimento da biblioteca do acelerômetro.
+
+O jogo foi desenvolvido tendo em mente um critério de pontuação simples, tal como o encontrado no TETRIS clássico (cada linha completa é totalmente eliminada e essa ação aumenta a pontuação do jogador); No entanto, tendo em vista a limitação de movimento das peças (rotação não deve ser permitida), foi necessário limitar o tamanho e complexidade das formas das peças (quadado 1x1, quadrado 2x2, 2 cantos de 3 blocos e linhas de 3 blocos horizontais e verticais), de modo a permitir uma sessão de jogo satisfatória.
+
+O processo de desenvolvimento do jogo seguiu sem muito percalços, salvo uma dificuldade inicial com o uso de ponteiros em c para passagem de argumento de função via referência ao invés de cópia (o que acontece quando tentamos passar o "objeto" ao invés de seu ponteiro).
+
+A biblioteca de controle do acelerômetro ADXL345 foi densenvolvida a partir da observação do funcionamento do código para outras bibliotecas utilizadas pela placa DE1-SoC (em especial aquela utilizada para comunicação com as Chaves SW0-SW9 da placa, acessada pelo caminho <intelfpgaup/SW.h>). Seguindo o exemplo dessas bibliotecas, faz-se alteração nos endereços físicos mapeados na memória virtual para refletir aqueles referentes ao controlador I2C que acessa o acelerômetro. A seguir, foram desenvolvidas as funções de initcialização e calibragem do aparelho conforme instruções contidas em documentos técnicos e tendo como base tutoriais de uso. Na aplicação, tendo em vista modularidade e organização do código, foi utilizado "thread" para atualizar constantemente os valores lidos nos eixos X, Y e Z, os quais estão atrelados a variáveis globais acessadas por outras funções.
+ 
+A maior dificuldade encontrada nessa parte do processo foi identificar que o endereço do acelerômetro "linkado" ao controlador I2C estava incorreto, o que impossibilitou qualquer acesso aos dados de aceleração. Resolvido tal problema, o processo de implementação da biblioteca seguiu normalmente com testes dos valores obtidos e desenvolvimento de uma função capaz de obter uma leitura inicial do eixo X em questão, a qual é usada como base para avaliar a inclinação da placa DE1-SoC como um todo.
+
+Por fim, foram decididos os intervalos de aceleração no eixo e que tipo de dispositivo de entrada controlaria a sessão de jogo. Optou-se pelo uso das chaves HH tanto para PAUSA/CONTINUAR quanto para "RESET" do jogo, já que a biblioteca disponível para controle dos botões necessitava mudança do estado dos mesmos para leitura, o que acarretaria em mudanças significativas no código já implementado até o momento.
+
+## Referências
+
+- [Tutorial de Desenvolvimento Linux em ARM, por FPGA Academy](https://github.com/fpgacademy/Tutorials/releases/download/v21.1/Linux_with_ARM_A9.pdf)
+- [Manual da Placa FPGA DE1-SoC](https://drive.google.com/file/d/1HzYtd1LwzVC8eDobg0ZXE0eLhyUrIYYE/view)
+- [GCC - Coletânea de Compiladores GNU](https://gcc.gnu.org/)
+- [C/C++ no Visual Studio Code para Iniciantes](https://code.visualstudio.com/docs/cpp/config-mingw)
+- [MinGW - GCC Minimalista para Windows](https://sourceforge.net/projects/mingw/)
