@@ -6,13 +6,15 @@ Com o objetivo de gerar o entendimento da arquitetura e funcionamento do kit de 
 
 Os arquivos do código, escrito em C estão disponíveis no diretório da aplicação. Sendo eles:
 
-`game.c
+- game.c
 
 Arquivo principal onde se encontra a maior parte do código do jogo.
 
-`map.c
+- map.c
 
-Arquivo onde é feito 
+Arquivo onde ficam as funções de mapeamento de memória e uso do acelerômetro.
+
+- 
 
 ## Lógica do jogo
 
