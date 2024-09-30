@@ -2,6 +2,10 @@
 
 Com o objetivo de gerar o entendimento da arquitetura e funcionamento do kit de desenvolvimento DE1-SoC, além de conhecimentos de interação hardware-software através da linguagem C, foi desenvolvido um jogo digital semelhante ao Tetris. As funções principais do jogo são: movimento, que é calculado através dos valores obtidos pelo uso do acelerômetro; controle de execução - pausar, continuar e reiniciar o jogo; e contagem de pontos, que são calculados quando o jogador completa uma linha de blocos.
 
+## Como executar
+
+Os arquivos do código, escrito em C estão disponíveis no diretório da aplicação.
+
 ## Lógica do jogo
 
 Para criar a tela do jogo, foi feito o uso de uma matriz de inteiros (tipo int) 10x24 onde os elementos representam as células do jogo. Para gerar as peças utilizadas são geradas matrizes de inteiros (tipo int) 4x4. Nessas matrizes o número 0 representa os espaços vazios e os demais números são referentes ao índice da cor dos blocos. As matrizes são unidas, por meio do preenchimento de uma segunda matriz 10x24, imediatamente antes da exibição da tela.
