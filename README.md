@@ -44,6 +44,7 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
-### Conclusão
+<!--### Conclusão
 
 Nesse projeto é possível não somente demonstrar a comunicação eficaz com o ADXL345, mas também oferece uma visão prática sobre como trabalhar com dispositivos I2C e mapeamento de memória em sistemas embarcados.
+-->
