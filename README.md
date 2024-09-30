@@ -71,6 +71,8 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
+![24864f4e-303a-4d93-8137-26435f9be09a](https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343)
+
 ## Desenvolvimento do projeto
 
 A fase inicial do projeto foi constituída de considerações acerca da lógica básica do jogo e sobre a modularidade mínima necessária em todo o projeto. Foi decidido que o jogo utilizaria as bibliotecas permitidas para uma implementação rápida, ou seja, todas menos as referentes ao acelerômetro ADXL345, o que resultou na divisão do projeto entre o desenvolvimento do jogo e o desenvolvimento da biblioteca do acelerômetro.
