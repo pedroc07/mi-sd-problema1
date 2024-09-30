@@ -72,7 +72,7 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
-![24864f4e-303a-4d93-8137-26435f9be09a](https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343)
+<a href="url"><img src="https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343" height=75% width=75% ></a>
 
 ## Desenvolvimento do projeto
 
@@ -94,15 +94,15 @@ O programa foi testado num kit de desenvolvimento DE1-SoC, que é composto por u
 
 Os testes foram feitos de forma a verificar as funcionalidades básicas do programa em cada uma de suas telas.
 
-![tela_inicial](https://github.com/user-attachments/assets/3ba0ca4f-9343-4284-847f-fb2e64f5b633)
+<a href="url"><img src="https://github.com/user-attachments/assets/3ba0ca4f-9343-4284-847f-fb2e64f5b633" height=50% width=50% ></a>
 
 Durante a tela inicial, a única ação que o jogador pode fazer é inicir o jogo acionando a chave. Essa funcionalidade foi conferida.
 
-![tela_execucao](https://github.com/user-attachments/assets/9986ba7c-9d8f-473c-87a5-0c35e73634a6)
+<a href="url"><img src="https://github.com/user-attachments/assets/9986ba7c-9d8f-473c-87a5-0c35e73634a6" height=50% width=50% ></a>
 
 A tela de execução é basicamente a tela exposta quando o jogo está funcionando. Nela o jogador pode mover a placa DE1-SoC para mudar a direção da peça, pode pontuar preenchendo a linha final com peças, pausar e continuar o jogo através de uma das chaves e reiniciar através de outra. Todas essas funcionalidades foram devidamente desenvolvidas e testadas.
 
-![tela_final](https://github.com/user-attachments/assets/21532620-132c-4dd2-960c-dd47fcba242c)
+<a href="url"><img src="https://github.com/user-attachments/assets/21532620-132c-4dd2-960c-dd47fcba242c" height=50% width=50% ></a>
 
 A tela final é exibida quando o jogador atinge a linha limite na tela de execução e a única funcionalidade possível nela é o reinicio do jogo e o retorno à tela inicial.
 
