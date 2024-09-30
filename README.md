@@ -71,11 +71,6 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
-<!--### Conclusão
-
-Nesse projeto é possível não somente demonstrar a comunicação eficaz com o ADXL345, mas também oferece uma visão prática sobre como trabalhar com dispositivos I2C e mapeamento de memória em sistemas embarcados.
--->
-
 ## Desenvolvimento do projeto
 
 A fase inicial do projeto foi constituída de considerações acerca da lógica básica do jogo e sobre a modularidade mínima necessária em todo o projeto. Foi decidido que o jogo utilizaria as bibliotecas permitidas para uma implementação rápida, ou seja, todas menos as referentes ao acelerômetro ADXL345, o que resultou na divisão do projeto entre o desenvolvimento do jogo e o desenvolvimento da biblioteca do acelerômetro.
@@ -96,9 +91,15 @@ O programa foi testado num kit de desenvolvimento DE1-SoC, que é composto por u
 
 Os testes foram feitos de forma a verificar as funcionalidades básicas do programa em cada uma de suas telas.
 
+![tela_inicial](https://github.com/user-attachments/assets/3ba0ca4f-9343-4284-847f-fb2e64f5b633)
+
 Durante a tela inicial, a única ação que o jogador pode fazer é inicir o jogo acionando a chave. Essa funcionalidade foi conferida.
 
+![tela_execucao](https://github.com/user-attachments/assets/9986ba7c-9d8f-473c-87a5-0c35e73634a6)
+
 A tela de execução é basicamente a tela exposta quando o jogo está funcionando. Nela o jogador pode mover a placa DE1-SoC para mudar a direção da peça, pode pontuar preenchendo a linha final com peças, pausar e continuar o jogo através de uma das chaves e reiniciar através de outra. Todas essas funcionalidades foram devidamente desenvolvidas e testadas.
+
+![tela_final](https://github.com/user-attachments/assets/21532620-132c-4dd2-960c-dd47fcba242c)
 
 A tela final é exibida quando o jogador atinge a linha limite na tela de execução e a única funcionalidade possível nela é o reinicio do jogo e o retorno à tela inicial.
 
