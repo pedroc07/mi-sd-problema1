@@ -38,7 +38,7 @@ A seguir, em se tratando do movimento vertical, sua impossibilidade resulta na c
 
 O controle do fluxo de jogo é feito por meio da combinação dos resultados da leitura de certos dispositivos de entrada da placa DE1-SoC (chaves SW0 e SW1) e do próprio código do programa. Em execução, o jogo pode realizar ações de movimento e atualização da tela, como dito anteriormente; Em pausa e quando finalizada a sessão de jogo, movimentos e atualizações de tela não podem ocorrer, mas o usuário pode reiniciar o jogo inteiro em ambas as ocasiões e retomar a sessão atual apenas em caso de pausa.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d" height=75% width=75% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d"></a>
 
 ###### Diagrama completo da lógica do jogo tal como implementada no arquivo "game.c"
 
@@ -72,7 +72,7 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343" height=75% width=75% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343"></a>
 
 ## Desenvolvimento do projeto
 
@@ -94,15 +94,15 @@ O programa foi testado num kit de desenvolvimento DE1-SoC, que é composto por u
 
 Os testes foram feitos de forma a verificar as funcionalidades básicas do programa em cada uma de suas telas.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/3ba0ca4f-9343-4284-847f-fb2e64f5b633" height=50% width=50% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/3ba0ca4f-9343-4284-847f-fb2e64f5b633" height=75% width=75% ></a>
 
 Durante a tela inicial, a única ação que o jogador pode fazer é inicir o jogo acionando a chave. Essa funcionalidade foi conferida.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/9986ba7c-9d8f-473c-87a5-0c35e73634a6" height=50% width=50% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/9986ba7c-9d8f-473c-87a5-0c35e73634a6" height=75% width=75% ></a>
 
 A tela de execução é basicamente a tela exposta quando o jogo está funcionando. Nela o jogador pode mover a placa DE1-SoC para mudar a direção da peça, pode pontuar preenchendo a linha final com peças, pausar e continuar o jogo através de uma das chaves e reiniciar através de outra. Todas essas funcionalidades foram devidamente desenvolvidas e testadas.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/21532620-132c-4dd2-960c-dd47fcba242c" height=50% width=50% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/21532620-132c-4dd2-960c-dd47fcba242c" height=75% width=75% ></a>
 
 A tela final é exibida quando o jogador atinge a linha limite na tela de execução e a única funcionalidade possível nela é o reinicio do jogo e o retorno à tela inicial.
 
