@@ -4,7 +4,7 @@ Com o objetivo de gerar o entendimento da arquitetura e funcionamento do kit de 
 
 ## Como executar
 
-Os arquivos do código, escrito em C estão disponíveis no diretório da aplicação. Sendo eles:
+O programa é compatível com linux, sendo desenvolvido para funcionar em uma máquina com processador ARM, mais especificamente numa placa DE1-SoC. Os arquivos do código, escrito em C estão disponíveis no diretório da aplicação. Sendo eles:
 
 - game.c
 
@@ -17,6 +17,16 @@ Arquivo onde ficam as funções de mapeamento de memória e uso do acelerômetro
 - address_map_arm.h
 
 Arquivo header com os endereços dos registradores usados.
+
+Para executar o programa, utilize o arquivo makefile também disponível. Em um diretório com os arquivos citados anteriormente, execute os seguintes comandos no terminal linux:
+
+- make all
+  
+Cria o executável.
+
+- sudo ./game
+
+Executa o jogo.
 
 ## Lógica do jogo
 
