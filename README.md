@@ -2,11 +2,7 @@
 
 Com o objetivo de gerar o entendimento da arquitetura e funcionamento do kit de desenvolvimento DE1-SoC, além de conhecimentos de interação hardware-software através da linguagem C, foi desenvolvido um jogo digital semelhante ao Tetris. As funções principais do jogo são: movimento, que é calculado através dos valores obtidos pelo uso do acelerômetro; controle de execução - pausar, continuar e reiniciar o jogo; e contagem de pontos, que são calculados quando o jogador completa uma linha de blocos.
 
-
-
-https://github.com/user-attachments/assets/3af16f32-dac0-49fd-a73a-e2ab75105308
-
-
+https://github.com/user-attachments/assets/42a0d176-4db6-48d7-817b-f2e1ef705115
 
 ## Como executar
 
