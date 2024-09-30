@@ -38,7 +38,7 @@ A seguir, em se tratando do movimento vertical, sua impossibilidade resulta na c
 
 O controle do fluxo de jogo é feito por meio da combinação dos resultados da leitura de certos dispositivos de entrada da placa DE1-SoC (chaves SW0 e SW1) e do próprio código do programa. Em execução, o jogo pode realizar ações de movimento e atualização da tela, como dito anteriormente; Em pausa e quando finalizada a sessão de jogo, movimentos e atualizações de tela não podem ocorrer, mas o usuário pode reiniciar o jogo inteiro em ambas as ocasiões e retomar a sessão atual apenas em caso de pausa.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d" height=50% width=50% ></a>
+<a href="url"><img src="https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d" height=75% width=75% ></a>
 
 ###### Diagrama completo da lógica do jogo tal como implementada no arquivo "game.c"
 
