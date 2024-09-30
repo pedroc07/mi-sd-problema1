@@ -14,7 +14,9 @@ Arquivo principal onde se encontra a maior parte do código do jogo.
 
 Arquivo onde ficam as funções de mapeamento de memória e uso do acelerômetro.
 
-- 
+- address_map_arm.h
+
+Arquivo header com os endereços dos registradores usados.
 
 ## Lógica do jogo
 
