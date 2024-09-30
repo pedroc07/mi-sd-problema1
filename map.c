@@ -39,6 +39,7 @@
 #define XL345_INACTIVITY           0x08
 #define XL345_ACTIVITY             0x10
 #define XL345_RATE_100             0x0a
+#define XL345_DATAREADY            0x80
 
 
 volatile int *I2C0_con, *I2C0_tar, *I2C0_data, *I2C0_readbuffer, *I2C0_enable, *I2C0_enable_sts, *I2C0_fs_hcnt, *I2C0_fs_lcnt;
@@ -191,7 +192,7 @@ int ADXL345_IsDataReady(){
 
     ADXL345_read(ADXL345_REG_INT_SOURCE,&data8);
 
-    if (data8 & XL345_ACTIVITY){
+    if (data8 & XL345_DATAREADY){
         bReady = 1;
     }
     return bReady;
