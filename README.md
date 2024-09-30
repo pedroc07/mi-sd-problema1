@@ -26,7 +26,7 @@ Para executar o programa, utilize o arquivo makefile também disponível; Em um 
 
 - sudo ./game
 
-###### (Executa o jogo. Vale lembrar que o sufixo "sudo" executa o programa em "root" do Linux, e portanto seu uso faz-se desnecessario se o sistema no qual o programa é executado já está permitindo acesso aos recursos privilegiados necessários; Ademais, por ser um recurso do Linux, outros sistemas operacionais que porventura permitam a compilação do programa podem não reconhecer tal comando.)
+###### (Executa o jogo.)
 
 ## Lógica do jogo
 
