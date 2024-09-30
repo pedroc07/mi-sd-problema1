@@ -42,31 +42,15 @@ O controle do fluxo de jogo é feito por meio da combinação dos resultados da 
 
 De modo a compreender o funcionamento básico de algumas bibliotecas usualmente empregadas pelo kit de desenvolvimento DE1-SoC (e seus equivalentes em modelos de produção), foi requisitado que a comunicação com o acelerômetro (modelo ADXL345) embutido na placa deve ser estabelecida sem o uso de bibliotecas para acelerômetros já disponíveis. Para tal, emprega-se o uso do mapeamento de memória e leitura/escrita dos registros assim indexados.
 
-O mapeamento de memória é feito por meio do uso de funções da biblioteca mmap (função mmap). A função mmap estabelece ligação entre endereços físicos da memória e endereços virtuais dentro do espaço de memória do programa. Isso é necessário pois o espaço de modificação permitido para o programa não está na memória física, e sim em sua memória virtual.
-
-Em suma, segue-se os seguintes procedimentos abaixo para a operação do acelerômetro ADXL345.
-
-### Mapeamento de Memória
-
 A comunicação com o ADXL345 começa com a abertura do espaço `/dev/mem`, que permite acessar a memória física do sistema. Isso é crucial, pois o ADXL345 é acessado por meio do barramento I2C, que requer acesso direto aos registradores de controle. Após abrir o dispositivo, mapea-se a região correspondente ao I2C, associando os registradores necessários ao espaço de memória do programa. Esse mapeamento nos permite ler e escrever diretamente nos registradores do I2C, facilitando a configuração e a comunicação com o acelerômetro.
-
-### Inicialização do I2C
 
 Uma vez mapeados os registradores, inicializa-se o barramento I2C. Nesta etapa, configura-se o I2C para operar como mestre e definimos o ADXL345 como o escravo. Isso envolve a definição de parâmetros como a frequência de operação e os períodos de temporização, garantindo que a comunicação seja realizada de forma eficiente. Os registradores do I2C são utilizados para enviar comandos e configurar o acelerômetro, preparando-o para a operação.
 
-### Funções de Leitura e Escrita
-
 Com a configuração do I2C em funcionamento, desenvolve-se funções específicas para leitura e escrita nos registradores do ADXL345. Essas funções abstraem os detalhes da comunicação I2C, permitindo uma interação mais fácil com o acelerômetro. Por exemplo, implementa-se funções para ler os dados de aceleração dos eixos X, Y e Z, além de escrever valores de configuração nos registradores do acelerômetro.
-
-### Inicialização do ADXL345
 
 O próximo passo é a inicialização do ADXL345. Durante esta fase, condigura-se o dispositivo para operar na faixa de ±16g e em resolução total. Também é definido a taxa de amostragem para 250 Hz, garantindo que o acelerômetro forneça dados em tempo real com a precisão necessária para nossas aplicações. Essa configuração é fundamental para obter leituras precisas e confiáveis.
 
-### Calibração
-
 Após a inicialização, realiza-se a calibração do acelerômetro. Este processo envolve coletar amostras dos dados de aceleração enquanto o dispositivo está em repouso e calcular offsets para os eixos. Esses offsets são então escritos de volta nos registradores do ADXL345, garantindo que as medições sejam ajustadas corretamente e representem a aceleração real.
-
-### Leitura em Tempo Real
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
