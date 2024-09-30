@@ -4,6 +4,10 @@ Com o objetivo de gerar o entendimento da arquitetura e funcionamento do kit de 
 
 
 
+https://github.com/user-attachments/assets/3af16f32-dac0-49fd-a73a-e2ab75105308
+
+
+
 ## Como executar
 
 O programa é compatível com linux, sendo desenvolvido para funcionar em uma máquina com processador ARM, mais especificamente numa placa DE1-SoC. Os arquivos do código, escrito em C estão disponíveis no diretório da aplicação. Sendo eles:
