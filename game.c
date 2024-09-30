@@ -1,12 +1,20 @@
+//Bibliotecas basicas do C
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <time.h>
-# include <sys/time.h>
+
+//Biblioteca time, implementada por padrao em LINUX e Windows
+#include <sys/time.h>
+
+//Biblioteca original de mapeamento da memoria do dispositivo DE1-SoC com Linux embutido
 #include "map.c"
+
+//Biblioteca de criacao e gerenciamento de threads para Linux
 #include <pthread.h>
 
-# include <intelfpgaup/video.h>
+//Bibliotecas inclusas com o dispositivo DE1-SoC, para controle de perifericos
+#include <intelfpgaup/video.h>
 #include <intelfpgaup/SW.h>
 #include <intelfpgaup/KEY.h>
 
@@ -28,6 +36,7 @@ void* ler_acelerometro(void* arg) {
       aceleracaoZ = XYZ[2];
       usleep(100000);
 
+      //Atualiza a medicao do acelerometro ate 10x, para obter um valor inicial de X valido para uso
       if(cont<9) {
         X_inicial = aceleracaoX;
         cont++;
@@ -171,89 +180,6 @@ void desenha_estado(int estado_jogo, int linha_limite) {
   video_clear();
 }
 
-//Funcao que desenha uma matriz 10x24
-//Versao de teste (print)
-/*void desenha_matriz(int t[10][24]){
-  int cont0;
-  int cont1;
-
-  printf("\n\n");
-
-  for(cont1 = 0; cont1 < 24; cont1++) {
-    printf("\n");
-
-    for(cont0 = 0; cont0 < 10; cont0++){
-      
-      if(t[cont0][cont1] == 1) {
-        printf("\033[1;31m");
-      }
-      else if(t[cont0][cont1] == 2) {
-        printf("\033[0;31m");
-      }
-      else if(t[cont0][cont1] == 3) {
-        printf("\033[0;35m");
-      }
-      else if(t[cont0][cont1] == 4) {
-        printf("\033[1;33m");
-      }
-      else if(t[cont0][cont1] == 5) {
-        printf("\033[1;32m");
-      }
-      else if(t[cont0][cont1] == 6) {
-        printf("\033[1;36m");
-      }
-      else if(t[cont0][cont1] == 7) {
-        printf("\033[1;34m");
-      }
-      else if(t[cont0][cont1] == 8) {
-        printf("\033[1;35m");
-      }
-      else if(t[cont0][cont1] == 9) {
-        printf("\033[1;37m");
-      }
-      
-      if (t[cont0][cont1] == 0) {
-        printf("- ");
-      }
-      else {
-        printf("# ");
-      }
-      
-      printf("\033[0m");
-    }
-  }
-
-  printf("\n\n");
-}*/
-
-//Funcao que exibe a pontuacao do jogador na tela
-//Versao de teste (print)
-/*void desenha_pontos(int pontos){
-  int cont0;
-  int cont1;
-
-  printf("\n");
-  printf("PONTUACAO: %d", pontos);
-}*/
-
-//Funcao que exibe a linha limite da colocacao das pecas e diz o estado do jogo caso esteja pausado ou seja "fim de jogo"
-//Versao de teste (print)
-/*void desenha_estado(int estado_jogo, int linha_limite) {
-
-  if(estado_jogo == 0) {
-    //printf("\n");
-    //printf("%d", linha_limite);
-  }
-  else if(estado_jogo == 1) {
-    printf("\n");
-    printf("JOGO PAUSADO");
-  }
-  else if(estado_jogo == 3) {
-    printf("\n");
-    printf("FIM DA PARTIDA. INICIE UMA NOVA PARTIDA PARA CONTINUAR JOGANDO.");
-  }
-}*/
-
 //Funcao que consolida as funcoes de atualizacao da tela
 void atualiza_tela(int estatico[10][24], int peca[4][4], int posx, int posy, int pontos, int estado_jogo, int linha_limite) {
   
@@ -393,6 +319,7 @@ int gerar_peca(int (*peca)[4][4], int forma, int cor) {
 //A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
 int ler_movimento() {
 
+  //A direcao inicialmente e 0, mas pode mudar de acordo com a inclinado
   int direcao = 0;
 
   printf("X_INICIAL = %d, ", X_inicial);
@@ -400,6 +327,8 @@ int ler_movimento() {
   printf("Y = %d, ", aceleracaoY);
   printf("Z = %d\n", aceleracaoZ);
   
+  //Decide a quantidade de ciclos necessarios para o proximo movimento, caso a inclinacao seja reconhecida como suficiente
+  //As variaveis de inclinacao do dispositivo sao globais pois a biblioteca de criacao de threads nao permite passagem de argumentos facilmente 
   if((aceleracaoX >= (X_inicial + 30)) && (aceleracaoX < (X_inicial + 50))) {
     direcao = 50;
   }
@@ -422,36 +351,6 @@ int ler_movimento() {
   return direcao;
 }
 
-//Funcao que interpreta o movimento
-//A direcao na verdade e a quantidade de ciclos necessarias desde a ultima movimentacao lateral com sinal indicando a real direcao do movimento
-//Versao de teste (pre-programada)
-/*int ler_movimento(int contador_loop) {
-  int direcao = 0;
-  
-  if(contador_loop == 10) {
-    direcao = 10;
-  }
-  else if(contador_loop == 30) {
-    direcao = 10;
-  }
-  else if(contador_loop == 45) {
-    direcao = 10;
-  }
-  else if(contador_loop == 705) {
-    direcao = -10;
-  }
-  else if(contador_loop == 711) {
-    direcao = -10;
-  }
-  else if(contador_loop == 714) {
-    direcao = -10;
-  }
-  else if(contador_loop == 715) {
-    direcao = -10;
-  }
-
-  return direcao;
-}*/
 
 //Funcao que le a entrada atual de chaves para controle do game
 int ler_comando() {
@@ -480,6 +379,7 @@ int ler_comando() {
 }
 
 //Funcao que le a entrada atual de chaves para controle do game
+//Esta existe apenas para print, foi mantida no codigo pois assim estava na ultima vez que foi rodado na placa
 int ler_reset() {
   int estado;
 
@@ -493,8 +393,10 @@ int ler_reset() {
 //Desenha a tela inicial do jogo
 int tela_inicial(){
   
+  //Background
   video_box(110, 0, 210, 239, video_GREY);
 
+  //Titulo do jogo
   char nome_jogo[12] = "TETRIS 2024";
   video_text(35, 30, nome_jogo);
 
@@ -528,12 +430,16 @@ int main ( void ) {
    I2C0_fs_hcnt = (int *) (I2C0_virtual + 0x1C);
    I2C0_fs_lcnt = (int *) (I2C0_virtual + 0x20);
 
+  //Inicializa o controlador I2C e configura a conexao entre o controlador I2C e o acelerometro ADXL345
   I2C0_init();
 
+  //Inicializa e configura o acelerometro
   ADXL_345_init();
-    
+  
+  //Calibra o acelerometro
   ADXL345_Calibrate();
 
+  //Cria o thread de monitoramento do acelerometro, que constantemente atualiza os valores da medicao das inclinacoes X, Y e Z (medida em g referente a forca de aceleracao sentida em cada eixo)
   pthread_t thread_acelerometro;
 
     if (pthread_create(&thread_acelerometro, NULL, ler_acelerometro, NULL) != 0) {
@@ -557,15 +463,6 @@ int main ( void ) {
     //Inicia com 0 os espacos de jogo e da peca
     preenche_zero_10_x_24(&estatico);
     preenche_zero_4_x_4(&peca);
-
-    //Preenche certos espacos da matriz estatica para fins de teste
-    //estatico[0][23] = 3;
-    //estatico[1][23] = 7;
-    //estatico[2][23] = 5;
-    //estatico[3][23] = 1;
-    //estatico[4][23] = 2;
-    //estatico[8][23] = 4;
-    //estatico[9][23] = 6;
 
     //Contador de ciclos do game, usado para testes
     int cont = 0;
