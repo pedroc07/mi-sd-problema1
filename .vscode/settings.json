@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "address_map_arm.h": "c",
-        "time.h": "c",
-        "stdlib.h": "c",
-        "stdio.h": "c"
-    }
-}
