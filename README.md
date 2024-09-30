@@ -36,59 +36,6 @@ A movimentação da peça atual - isto é, a atualização de suas posições x 
 
 A seguir, em se tratando do movimento vertical, sua impossibilidade resulta na colocação dos blocos da peça na matriz "estática" do jogo. Ademais, quando isto ocorre, avalia-se a posição y final da peça que acabou de ser colocada: Caso dentro da área permitida (aquela delimitada pela área abaixo da linha horizontal de cor branca), o jogo continua por meio do "sorteio" de um formato e cor para uma nova peça; Caso fora desta área, o jogo é marcado como "finalizado".
 
-```c
-//Se houve obstrucao, significa que a peca sera colocada e acontecera uma verificacao para "implodir" linhas
-//Tambem reseta a peca atual
-//Por fim, verifica se a peca colocada esta dentro dos limites da area de jogo, para ver se configura "game over"
-if(resultado_mover == 1) {
-  
-  //Colocacao da peca (une a matriz dos objetos com a matriz da peca na propria matriz dos objetos)
-  une_matriz(&estatico, estatico, peca, posx, posy);
-  //A peca atual deixa de existir
-  preenche_zero_4_x_4(&peca);
-  
-  //Tenta eliminar linhas e guarda o resultado
-  int linha_eliminada = implodir(&estatico);
-
-  //Caso elimine linha... 
-  while (linha_eliminada != (-1)) {
-    
-    //Aumenta a contagem de pontos
-    contador_pontos = (contador_pontos + 1);
-
-    //...E continua tentando ate nao mais eliminar
-    cascada(&estatico, linha_eliminada);
-    linha_eliminada = implodir(&estatico);
-  }
-
-  //Verificacao do limite do jogo
-  //Se estiver nos limites, o jogo continua
-  if (posy > linha_limite) {
-
-    //"Reset" da peca
-    posx = 4;
-    posy = 0;
-
-    gettimeofday(&tempo, NULL);
-    tempo_preciso = tempo.tv_usec;
-    tempo_simples = tempo.tv_sec;
-    
-    srand (tempo_preciso);
-    rShape = (rand() % 6);
-    
-    srand(tempo_simples);
-    rColor = ((rand() % 8) + 1);
-
-    gerar_peca(&peca, rShape, rColor);
-  }
-  //Se nao estiver, o jogo terminou
-  else {
-    estado_jogo = 3;
-  }
-}
-```
-###### Trecho do código contido no arquivo "game.c", referente à lógica de detecção de colisão vertical e continuidade do jogo.
-
 O controle do fluxo de jogo é feito por meio da combinação dos resultados da leitura de certos dispositivos de entrada da placa DE1-SoC (chaves SW0 e SW1) e do próprio código do programa. Em execução, o jogo pode realizar ações de movimento e atualização da tela, como dito anteriormente; Em pausa e quando finalizada a sessão de jogo, movimentos e atualizações de tela não podem ocorrer, mas o usuário pode reiniciar o jogo inteiro em ambas as ocasiões e retomar a sessão atual apenas em caso de pausa.
 
 ![diagrama_sd](https://github.com/user-attachments/assets/0a81c3e7-06b9-47bc-b8e5-eb3080df686d)
@@ -116,29 +63,6 @@ void* map_physical(int fd, unsigned int base, unsigned int span) {
 
 Uma vez mapeados os registradores, inicializa-se o barramento I2C. Nesta etapa, configura-se o I2C para operar como mestre e definimos o ADXL345 como o escravo. Isso envolve a definição de parâmetros como a frequência de operação e os períodos de temporização, garantindo que a comunicação seja realizada de forma eficiente. Os registradores do I2C são utilizados para enviar comandos e configurar o acelerômetro, preparando-o para a operação.
 
-```c
-void I2C0_init(){
-    //Para qualquer transmissão no I2C0
-   *I2C0_enable = 2;
-   printf("Desligando I2C0..\n");
-   while(*I2C0_enable_sts == 1){}
-
-   //Seta o I2C como mestre e o ADXL345 como escravo
-   *I2C0_con = 0x65;
-   *I2C0_tar = 0x53;
-
-   //Seta o periodo
-   *I2C0_fs_hcnt = 60 + 30;  // 0.6us + 0.3us
-   *I2C0_fs_lcnt = 130 + 30; // 1.3us + 0.3us
-
-   //Liga o controlador
-   *I2C0_enable = 1;
-   printf("Ligando I2C0..\n");
-   while(*I2C0_enable_sts == 2){}
-}
-```
-###### Trecho de código contido no arquivo "map.c", referente ao estabelecimento da comunicação do controlador I2C com o acelerômetro ADXL345
-
 Com a configuração do I2C em funcionamento, desenvolve-se funções específicas para leitura e escrita nos registradores do ADXL345. Essas funções abstraem os detalhes da comunicação I2C, permitindo uma interação mais fácil com o acelerômetro. Por exemplo, implementa-se funções para ler os dados de aceleração dos eixos X, Y e Z, além de escrever valores de configuração nos registradores do acelerômetro.
 
 O próximo passo é a inicialização do ADXL345. Durante esta fase, condigura-se o dispositivo para operar na faixa de ±16g e em resolução total. Também é definido a taxa de amostragem para 250 Hz, garantindo que o acelerômetro forneça dados em tempo real com a precisão necessária para nossas aplicações. Essa configuração é fundamental para obter leituras precisas e confiáveis.
@@ -165,6 +89,20 @@ A biblioteca de controle do acelerômetro ADXL345 foi densenvolvida a partir da 
 A maior dificuldade encontrada nessa parte do processo foi identificar que o endereço do acelerômetro "linkado" ao controlador I2C estava incorreto, o que impossibilitou qualquer acesso aos dados de aceleração. Resolvido tal problema, o processo de implementação da biblioteca seguiu normalmente com testes dos valores obtidos e desenvolvimento de uma função capaz de obter uma leitura inicial do eixo X em questão, a qual é usada como base para avaliar a inclinação da placa DE1-SoC como um todo.
 
 Por fim, foram decididos os intervalos de aceleração no eixo e que tipo de dispositivo de entrada controlaria a sessão de jogo. Optou-se pelo uso das chaves HH tanto para PAUSA/CONTINUAR quanto para "RESET" do jogo, já que a biblioteca disponível para controle dos botões necessitava mudança do estado dos mesmos para leitura, o que acarretaria em mudanças significativas no código já implementado até o momento.
+
+## Testes de Funcionamento
+
+O programa foi testado num kit de desenvolvimento DE1-SoC, que é composto por uma placa Altera SoC (System-on-Chip) FPGA combinada com um processador ARM Cortex-A9 dual core. Essa integração permite também o uso de alguns periféricos em hardware através do HPS(Hard Processor System).
+
+Os testes foram feitos de forma a verificar as funcionalidades básicas do programa em cada uma de suas telas.
+
+Durante a tela inicial, a única ação que o jogador pode fazer é inicir o jogo acionando a chave. Essa funcionalidade foi conferida.
+
+A tela de execução é basicamente a tela exposta quando o jogo está funcionando. Nela o jogador pode mover a placa DE1-SoC para mudar a direção da peça, pode pontuar preenchendo a linha final com peças, pausar e continuar o jogo através de uma das chaves e reiniciar através de outra. Todas essas funcionalidades foram devidamente desenvolvidas e testadas.
+
+A tela final é exibida quando o jogador atinge a linha limite na tela de execução e a única funcionalidade possível nela é o reinicio do jogo e o retorno à tela inicial.
+
+## Conclusão
 
 ## Referências
 
