@@ -103,7 +103,6 @@ A tela de execução é basicamente a tela exposta quando o jogo está funcionan
 
 A tela final é exibida quando o jogador atinge a linha limite na tela de execução e a única funcionalidade possível nela é o reinicio do jogo e o retorno à tela inicial.
 
-## Conclusão
 
 ## Referências
 
