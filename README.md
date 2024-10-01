@@ -72,7 +72,8 @@ Após a inicialização, realiza-se a calibração do acelerômetro. Este proces
 
 Finalmente, implementa-se uma thread dedicada à leitura dos eixos do acelerômetro. Essa thread opera continuamente, lendo os valores de aceleração e armazenando-os em variáveis globais. Essa abordagem permite que o sistema processe os dados em tempo real, possibilitando a realização de ações ou análises baseadas nas leituras do acelerômetro.
 
-<a href="url"><img src="https://github.com/user-attachments/assets/d34bb88c-5d28-4aca-98d7-384ca1df3343"></a>
+![DIAGRAMA ACELERÔMETRO (1)](https://github.com/user-attachments/assets/e5415775-a314-4e3d-84db-597872023a44)
+
 
 ## Desenvolvimento do projeto
 
